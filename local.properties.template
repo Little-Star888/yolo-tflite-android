@@ -1,0 +1,23 @@
+# local.properties 模板
+# 复制此文件为 local.properties 并根据实际情况修改
+
+# Android SDK (使用绝对路径)
+sdk.dir=/path/to/project/.deps/android-sdk
+
+# JDK (Adoptium Temurin - 清华镜像)
+# 运行 ./setup-isolated-env.sh 后会自动生成正确的路径
+org.gradle.java.home=/path/to/project/.deps/jdk/jdk-21.0.10+7
+
+# NDK 版本已在 build.gradle.kts 中通过 ndkVersion 指定
+# AGP 9.x 会自动从 {sdk.dir}/ndk/{ndkVersion}/ 查找，无需手动配置 ndk.dir
+
+# ============================================================
+# 注意事项
+# ============================================================
+# 1. Linux/macOS 运行: ./setup-isolated-env.sh
+# 2. Windows 运行: .\setup-isolated-env-aria2.ps1 或 .\setup-isolated-env-surge.ps1
+# 3. 脚本会自动生成此文件，无需手动创建
+# 4. 将 /path/to/project 替换为实际项目路径
+# 5. Windows 路径使用双反斜杠: C\:\\path\\to\\project\\.deps\\android-sdk
+# 6. 所有依赖统一存放在 .deps/ 目录下，方便管理
+# 7. NDK 通过 SDK Manager 安装到 {sdk.dir}/ndk/28.2.13676358/

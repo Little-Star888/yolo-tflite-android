@@ -1,0 +1,390 @@
+<resources>
+    <string name="app_name">Yolo TFLite</string>
+
+    <!-- ========== MainHomeScreen ========== -->
+    <string name="main_home_title">YOLO Recognition</string>
+    <string name="task_detection">Object Detection</string>
+    <string name="task_detection_desc">Detect objects in images and draw bounding boxes</string>
+    <string name="task_keypoint">Keypoint Detection</string>
+    <string name="task_keypoint_desc">Detect body posture and keypoint positions</string>
+    <string name="task_segmentation">Instance Segmentation</string>
+    <string name="task_segmentation_desc">Pixel-level segmentation of objects in images</string>
+    <string name="task_classification">Image Classification</string>
+    <string name="task_classification_desc">Classify and recognize images</string>
+    <string name="task_oriented_bbox">Oriented Bbox Detection</string>
+    <string name="task_oriented_bbox_desc">Detect rotated objects with oriented bounding boxes</string>
+
+    <!-- ========== HomeScreen ========== -->
+    <string name="initializing">Initializing…</string>
+    <string name="no_models_available">No models available</string>
+    <string name="please_add_model">Please add a model to get started</string>
+    <string name="view_format_guide">View format guide</string>
+    <string name="model_management">Model Management</string>
+    <string name="local_import">Import</string>
+    <string name="remote_download">Download</string>
+    <string name="manage_delete">Manage</string>
+    <string name="select_import_source">Select Import Source</string>
+    <string name="select_model_directory">Select Model Directory</string>
+    <string name="select_model_archive">Select Model Archive (.zip only)</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">OK</string>
+    <string name="import_success">Import successful: %1$s, %2$d models</string>
+    <string name="import_failed">Import Failed</string>
+    <string name="back_to_main">Back to Main</string>
+    <string name="confirm_back_loading">The model is still loading. Going back will interrupt loading. Continue?</string>
+    <string name="confirm_back_importing">Model import in progress. Going back will cancel the import. Continue?</string>
+    <string name="confirm_back_downloading">Downloading \"%1$s\". Going back will cancel the download. Continue?</string>
+    <string name="confirm_back_default">Are you sure you want to go back?</string>
+    <string name="confirm_back">Yes, Go Back</string>
+    <string name="select_detection_mode">Select Detection Mode</string>
+    <string name="select_model_config">Please select model configuration</string>
+    <string name="model_loading">Loading model…</string>
+    <string name="model_ready">Model Ready</string>
+    <string name="model_load_failed">Load failed: %1$s</string>
+    <string name="confirm_download">Confirm Download</string>
+    <string name="file_size">File size: %1$s</string>
+    <string name="download_cellular_warning">Downloading this file will use about %1$s of mobile data. Additional charges may apply.</string>
+    <string name="continue_download">Download</string>
+    <string name="overwrite_confirm">Overwrite Confirmation</string>
+    <string name="overwrite_remote_exists">A remotely downloaded model package \"%1$s\" already exists. Overwrite?</string>
+    <string name="overwrite_local_exists">Locally imported model package(s) already exist:</string>
+    <string name="overwrite_confirm_question">Are you sure you want to overwrite?</string>
+    <string name="overwrite">Overwrite</string>
+    <string name="manage_imported_models">Manage Imported Models</string>
+    <string name="select_models_to_delete">Select Models to Delete</string>
+    <string name="multi_select">Multi-Select</string>
+    <string name="imported_packages_count">Imported model packages (%1$d total):</string>
+    <string name="delete">Delete</string>
+    <string name="delete_selected">Delete Selected (%1$d)</string>
+    <string name="close">Close</string>
+    <string name="confirm_delete">Confirm Deletion</string>
+    <string name="delete_package_confirm">Are you sure you want to delete model package \"%1$s\"? This cannot be undone.</string>
+    <string name="importing_model_package">Importing model package…</string>
+    <string name="package_progress">%1$d/%2$d model packages</string>
+    <string name="importing_ellipsis">Importing…</string>
+    <string name="download_paused">Paused %1$s</string>
+    <string name="downloading">Downloading %1$s</string>
+    <string name="resume">Resume</string>
+    <string name="pause">Pause</string>
+    <string name="import_success_generic">Import successful</string>
+
+    <!-- ========== CascadingDropdowns ========== -->
+    <string name="model_selection">Model Selection</string>
+    <string name="model_selection_info">Model Selection Guide</string>
+    <string name="model_format">Model Format</string>
+    <string name="model_package">Model Package</string>
+    <string name="model_size">Model Size</string>
+    <string name="model_file">Model File</string>
+    <string name="inference_config">Inference Configuration</string>
+    <string name="inference_config_info">Inference Configuration Guide</string>
+    <string name="inference_mode">Inference Mode</string>
+    <string name="inference_backend">Inference Backend</string>
+    <string name="accelerator">Accelerator</string>
+    <string name="confidence_threshold">Confidence Threshold</string>
+
+    <!-- ========== TipsDialogs - FormatHintDialog ========== -->
+    <string name="directory_structure">Directory Structure</string>
+    <string name="method_directory">Method 1: Select Model Directory</string>
+    <string name="select_task_folder">Select the task type folder directly:</string>
+    <string name="method_archive">Method 2: Select .zip Archive</string>
+    <string name="archive_structure_same">The archive structure is the same as Method 1:</string>
+    <string name="required_files">Required Files</string>
+    <string name="model_sizes_optional">Model Sizes (one or more)</string>
+    <string name="aot_precompiled">AOT Precompiled Models (optional, NPU acceleration)</string>
+    <string name="aot_description">Create an aot/ subdirectory under the size directory and place NPU precompiled models\nSkip JIT compilation, accelerate NPU initialization</string>
+    <string name="aot_naming_rule">Naming: {original_name_without_.tflite}_Qualcomm_{SoC_model}.tflite\nExample: yolo26n_Qualcomm_SM8650.tflite\nSupported SoCs: SM8450 / SM8550 / SM8650 / SM8750 / SM8850</string>
+    <string name="got_it">Got it</string>
+
+    <!-- ========== TipsDialogs - ModelSelectTipDialog ========== -->
+    <string name="tflite_only">Currently only TFLite model format is supported.</string>
+    <string name="model_package_sources">Model Package Sources</string>
+    <string name="sources_description">Model packages come from the following sources, each independent:\n  · Built-in — Pre-installed with the app\n  · Local Import — Imported from device storage\n  · Remote Download — Downloaded from server</string>
+    <string name="model_size_info">Model Sizes</string>
+    <string name="size_description">Size options (n / s / m / l / x) are dynamically displayed based on the models included in the current package. Different sources may have different sizes available.</string>
+
+    <!-- ========== TipsDialogs - InferenceConfigTipDialog ========== -->
+    <string name="inference_mode_label">Inference Mode</string>
+    <string name="inference_mode_description">Inference mode is automatically detected from the selected model:\n  · End-to-End (END2END) — Model output is direct detection results\n  · Traditional — Requires additional post-processing (NMS etc.)</string>
+    <string name="accelerator_compatibility">Accelerator Compatibility</string>
+    <string name="accelerator_description">YOLO26 official model accelerator support:\n\nTraditional INT8: CPU, GPU\nTraditional FLOAT16: CPU, GPU, NPU\nEnd-to-End (incl. INT8): CPU only (unsupported operators)</string>
+    <string name="inference_backend_label">Inference Backend</string>
+    <string name="backend_description">Native backend (recommended):\n  · Supports JIT compilation cache and AOT precompiled models\n\nJava backend:\n  · Only supports AOT precompiled models (LiteRT SDK does not yet provide JIT cache API)\n  · JIT compilation cache will be supported in future updates</string>
+
+    <!-- ========== UnifiedCameraScreen ========== -->
+    <string name="camera_title">Camera Detection</string>
+    <string name="capture_result">Capture Result</string>
+    <string name="back_to_camera">Back to Camera</string>
+    <string name="back">Back</string>
+    <string name="capturing">Capturing…</string>
+    <string name="capture_complete_tap_detect">Capture complete. Tap detect to recognize</string>
+    <string name="load_image_failed">Failed to load image: %1$s</string>
+    <string name="capture_failed">Capture failed: %1$s</string>
+    <string name="detector_not_ready">Detector not ready</string>
+    <string name="detecting">Detecting…</string>
+    <string name="detection_complete">Detection complete</string>
+    <string name="detection_failed">Detection failed: %1$s</string>
+    <string name="camera_permission_denied">Camera permission denied</string>
+    <string name="grant_camera_permission">Grant Camera Permission</string>
+    <string name="select_model_first">Please select a model in the config page first</string>
+    <string name="loading_model">Loading model…</string>
+    <string name="model_load_failed_camera">Model load failed: %1$s</string>
+    <string name="switch_camera">Switch Camera</string>
+    <string name="flash">Flash</string>
+    <string name="hardware_accel">Hardware Acceleration</string>
+    <string name="accel_tooltip">Hardware Acceleration: Uses GPU for image preprocessing, can improve detection frame rate</string>
+    <string name="realtime_detect">Realtime</string>
+    <string name="photo_detect">Photo</string>
+    <string name="captured_image">Captured Image</string>
+    <string name="inference_time">Inference Time</string>
+    <string name="no_targets_hint">No targets detected. Try lowering the confidence threshold</string>
+    <string name="detection_results_count">Detection Results (%1$d)</string>
+    <string name="start_detect">Start Detection</string>
+    <string name="preview">Preview</string>
+
+    <!-- ========== ImageScreen ========== -->
+    <string name="image_title">Single Image Detection</string>
+    <string name="select_image">Select Image</string>
+    <string name="image_label">Image</string>
+    <string name="error_prefix">Error: %1$s</string>
+    <string name="please_select_image">Please select an image to detect</string>
+    <string name="redetect">Re-detect</string>
+    <string name="image_preview">Image Preview</string>
+
+    <!-- ========== DirectoryScreen ========== -->
+    <string name="directory_title">Directory Detection</string>
+    <string name="select_image_directory">Select Image Directory</string>
+    <string name="please_select_directory">Please select an image directory for batch detection</string>
+    <string name="directory_name">Directory: %1$s</string>
+    <string name="directory_stats">%1$d images processed, %2$d with detections</string>
+
+    <!-- ========== VideoScreen ========== -->
+    <string name="video_title">Video Detection</string>
+    <string name="select_video">Select Video</string>
+    <string name="detection_settings">Detection Settings</string>
+    <string name="detection_interval">Detection Interval</string>
+    <string name="interval_ms">Detect every %1$dms</string>
+    <string name="interval_seconds">Detect every %1$ds</string>
+    <string name="save_frame_images">Save Detection Frames</string>
+    <string name="save_frame_tip_title">Save Frame Images Tip</string>
+    <string name="save_frame_tip_message">When enabled, each detection result image is kept in memory. For long videos or short sampling intervals, this may generate hundreds or thousands of images, causing:\n\n· Continuously increasing memory usage, potentially crashing\n· Slow page scrolling and loading\n\nRecommendations:\n· Increase sampling interval for long videos (e.g. 2~5 seconds)\n· Disable when image preview is not needed</string>
+    <string name="start_detection">Start Detection</string>
+    <string name="cancel_detection">Cancel Detection</string>
+    <string name="detection_statistics">Detection Statistics</string>
+    <string name="frames_processed">%1$d frames processed</string>
+    <string name="total_detections">Total detections: %1$d</string>
+    <string name="avg_inference_time">Avg inference time: %.2f ms</string>
+    <string name="frame_results">Frame Detection Results (%1$d)</string>
+    <string name="frame_number">Frame #%1$d</string>
+    <string name="frame_timestamp">%1$dms</string>
+    <string name="inference_time_ms">%.1fms</string>
+    <string name="detected_targets">Detected %1$d object(s)</string>
+    <string name="more_targets">… %1$d more</string>
+    <string name="collapse">Collapse</string>
+    <string name="seconds_suffix">s</string>
+    <string name="seconds_progress">%1$ds / %2$ds</string>
+
+    <!-- ========== DetectorStateBanner ========== -->
+    <string name="select_model_banner">Please select a model in the config page</string>
+    <string name="loading_model_banner">Loading model…</string>
+    <string name="model_error_banner">Model load failed: %1$s</string>
+
+    <!-- ========== DetectionResultCard ========== -->
+    <string name="failed">Failed</string>
+    <string name="detected_count">Detected %1$d object(s)</string>
+    <string name="no_targets">No targets detected</string>
+    <string name="detection_result">Detection Result</string>
+    <string name="original_image">Original Image</string>
+
+    <!-- ========== FullScreenImageDialog ========== -->
+    <string name="close_dialog">Close</string>
+    <string name="save_image">Save</string>
+    <string name="save_image_success">Saved to album</string>
+    <string name="save_image_failed">Save failed</string>
+    <string name="save_image_no_bitmap">No image to save</string>
+
+    <!-- ========== RemoteDownloadDialog ========== -->
+    <string name="remote_download_title">Remote Model Download</string>
+    <string name="server_address">Server Address</string>
+    <string name="loading_ellipsis">Loading…</string>
+    <string name="load_model_list">Load Model List</string>
+    <string name="available_models">Available models (%1$d):</string>
+    <string name="unknown">Unknown</string>
+    <string name="cancel_download">Cancel Download</string>
+    <string name="download">Download</string>
+    <string name="download_failed">Download failed</string>
+    <string name="download_cancelled">Download cancelled</string>
+
+    <!-- ========== DetectionMode ========== -->
+    <string name="mode_camera">Camera Detection</string>
+    <string name="mode_camera_desc">Real-time detection and photo detection</string>
+    <string name="mode_image">Single Image</string>
+    <string name="mode_image_desc">Select a single image to detect</string>
+    <string name="mode_directory">Directory</string>
+    <string name="mode_directory_desc">Batch detect all images in a directory</string>
+    <string name="mode_video">Local Video</string>
+    <string name="mode_video_desc">Select a local video to detect</string>
+
+    <!-- ========== TaskType ========== -->
+    <string name="tasktype_detection">Object Detection</string>
+    <string name="tasktype_detection_desc">Detect objects in images and draw bounding boxes</string>
+    <string name="tasktype_detection_title">Object Detection</string>
+    <string name="tasktype_detection_hint_title">Import Requirements for Object Detection Models</string>
+    <string name="tasktype_detection_hint_summary">For YOLO object detection models (e.g. yolo26n-detect)</string>
+    <string name="tasktype_detection_hint_note">One class name per line in label.txt, e.g.:\nperson\ncar\ndog</string>
+    <string name="tasktype_keypoint">Keypoint Detection</string>
+    <string name="tasktype_keypoint_desc">Detect target keypoint positions (body pose, hand keypoints, game areas, etc.)</string>
+    <string name="tasktype_keypoint_title">Keypoint Detection</string>
+    <string name="tasktype_keypoint_hint_title">Import Requirements for Keypoint Detection Models</string>
+    <string name="tasktype_keypoint_hint_summary">For YOLO keypoint detection models (e.g. yolo26n-pose, custom keypoint models)\nModel output includes bounding boxes and keypoint coordinates</string>
+    <string name="tasktype_keypoint_hint_note">label.txt — Unified config file, multi-section format:\n\n[classes]\nperson\n\n[keypoints]\nnose\nleft_eye\nright_eye\n...\n\n[flip_idx]\n0,2,1,4,3,6,5,8,7,10,9,12,11,14,13,16,15\n\n[keypoints_link]\n0,1\n1,2\n2,3\n...\n\n⚠️ Keypoint label.txt must include [classes], [keypoints], [flip_idx], [keypoints_link] sections (from training config)</string>
+    <string name="tasktype_segmentation">Instance Segmentation</string>
+    <string name="tasktype_segmentation_desc">Pixel-level segmentation of objects in images</string>
+    <string name="tasktype_segmentation_title">Instance Segmentation</string>
+    <string name="tasktype_segmentation_hint_title">Import Requirements for Instance Segmentation Models</string>
+    <string name="tasktype_segmentation_hint_summary">For YOLO instance segmentation models (e.g. yolo26n-seg)\nModel output includes bounding boxes and pixel-level segmentation masks</string>
+    <string name="tasktype_segmentation_hint_note">One class name per line in label.txt, same format as object detection</string>
+    <string name="tasktype_classification">Image Classification</string>
+    <string name="tasktype_classification_desc">Classify and recognize images</string>
+    <string name="tasktype_classification_title">Image Classification</string>
+    <string name="tasktype_classification_hint_title">Import Requirements for Image Classification Models</string>
+    <string name="tasktype_classification_hint_summary">For YOLO image classification models (e.g. yolo26n-cls)\nModel output is image class and confidence</string>
+    <string name="tasktype_classification_hint_note">One class name per line in label.txt, ordered by class index</string>
+    <string name="tasktype_obb">Oriented Bbox Detection</string>
+    <string name="tasktype_obb_desc">Detect rotated objects with oriented bounding boxes</string>
+    <string name="tasktype_obb_title">Oriented Bbox Detection</string>
+    <string name="tasktype_obb_hint_title">Import Requirements for OBB Detection Models</string>
+    <string name="tasktype_obb_hint_summary">For YOLO OBB models (e.g. yolo26n-obb)\nModel output includes rotated bounding boxes with angles</string>
+    <string name="tasktype_obb_hint_note">One class name per line in label.txt, same format as object detection</string>
+
+    <!-- ========== Settings ========== -->
+    <string name="model_ready_jit">Model Ready (JIT Cache)</string>
+    <string name="model_ready_aot">Model Ready (AOT Precompiled)</string>
+    <string name="settings">Settings</string>
+    <string name="language">Language</string>
+    <string name="language_zh">Chinese</string>
+    <string name="language_en">English</string>
+
+    <!-- ViewModel/Manager 错误消息 -->
+    <string name="error_detector_init_failed">Detector initialization failed</string>
+    <string name="error_detector_not_initialized">Detector not initialized, please load a model first</string>
+    <string name="error_import_preparing">Preparing import…</string>
+    <string name="error_importing_package">Importing: %1$s</string>
+    <string name="error_load_failed">Load failed</string>
+    <string name="error_download_cancelled">Download cancelled</string>
+    <string name="error_download_failed">Download failed</string>
+    <string name="error_model_load_failed">Model load failed: %1$s</string>
+
+    <!-- VideoViewModel -->
+    <string name="video_select_first">Please select a video first</string>
+    <string name="video_analyzing">Analyzing video…</string>
+    <string name="video_start_detect">Start detection (0/%1$s)</string>
+    <string name="video_detecting">Detecting %1$s / %2$s</string>
+    <string name="video_complete">Complete: %1$d samples, %2$d targets detected (total %3$s)</string>
+    <string name="video_process_failed">Processing failed: %1$s</string>
+    <string name="video_cancelled">Cancelled</string>
+
+    <!-- ImageViewModel -->
+    <string name="image_select_first">Please select an image first</string>
+    <string name="image_detect_complete">Detection complete, %1$d targets detected</string>
+    <string name="image_detect_failed">Detection failed: %1$s</string>
+
+    <!-- DirectoryViewModel -->
+    <string name="dir_scanning">Scanning directory…</string>
+    <string name="dir_no_access">Cannot access directory</string>
+    <string name="dir_no_images">No images in directory</string>
+    <string name="dir_detecting">Detecting %1$d/%2$d</string>
+    <string name="dir_complete">Complete: %1$d/%2$d images with targets</string>
+    <string name="dir_cannot_open">Cannot open file</string>
+    <string name="dir_cannot_decode">Cannot decode image</string>
+
+    <!-- LocalModelManager -->
+    <string name="import_dir_not_exist">Directory does not exist or is invalid</string>
+    <string name="import_invalid_task_type">First-level directory \"%1$s\" is not a valid task type. Expected one of: %2$s</string>
+    <string name="import_wrong_module">Model package belongs to \"%1$s\" module, currently in \"%2$s\" module. Please switch to the correct module</string>
+    <string name="import_missing_models_dir">Package \"%1$s\" is missing the models directory</string>
+    <string name="import_missing_label">Package \"%1$s\" is missing label.txt</string>
+    <string name="import_no_tflite_files">Package \"%1$s\"/\"%2$s\" has no tflite model files, skipping</string>
+    <string name="import_no_valid_models">Package \"%1$s\" has no valid model files, skipping</string>
+    <string name="import_aot_mismatch">AOT file \"%1$s\" in package \"%2$s\"/\"%3$s\"/aot/ does not match current device (Vendor: %4$s, SoC: %5$s)</string>
+    <string name="import_cannot_access_dir">Cannot access selected directory</string>
+    <string name="import_dir_structure_mismatch">Directory structure mismatch: \"%1$s\" subdirectory not found</string>
+    <string name="import_dir_structure_invalid">Directory structure invalid: %1$s</string>
+    <string name="import_missing_tflite_dir">Missing tflite directory</string>
+    <string name="import_need_subdirs">Directory structure mismatch, tflite directory needs {packageName}/label.txt and models/ subdirectory</string>
+    <string name="import_cancelled">Import cancelled</string>
+    <string name="import_no_valid_files">No valid model files found, please check directory structure</string>
+    <string name="import_cannot_read_archive">Cannot read archive: %1$s</string>
+    <string name="import_archive_structure_mismatch">Archive \"%1$s\" directory structure mismatch: missing \"%2$s\" directory</string>
+    <string name="import_archive_structure_invalid">Archive \"%1$s\" directory structure mismatch: %2$s</string>
+    <string name="import_archive_no_valid">Archive \"%1$s\" contains no valid model directory structure (needs label.txt and models/ subdirectory)</string>
+    <string name="import_archive_extract_failed">Failed to extract \"%1$s\": %2$s</string>
+    <string name="import_remote_structure_mismatch">Remote package structure mismatch: missing \"%1$s\" directory</string>
+    <string name="import_remote_structure_invalid">Remote package structure mismatch: %1$s</string>
+    <string name="import_remote_no_valid">Remote package contains no valid model directory structure</string>
+    <string name="import_remote_failed">Failed to import remote package: %1$s</string>
+    <string name="import_unknown_package">Unknown package</string>
+    <string name="import_unknown_file">Unknown file</string>
+    <string name="import_size_dir_invalid">Size directory \"%1$s\" in package \"%2$s\" is invalid, skipping</string>
+
+    <!-- SharedDetectorViewModel remaining -->
+    <string name="error_batch_import_failed">%1$d imports failed</string>
+    <string name="error_batch_archive_import_failed">%1$d archive imports failed</string>
+    <string name="error_npu_unsupported_dsp">NPU does not support this model. DSP access denied by system. Please switch acceleration mode</string>
+    <string name="error_npu_unsupported">NPU does not support this model. Please switch acceleration mode</string>
+    <string name="error_gpu_unsupported">GPU does not support some operators in this model (INT64/FLOOR_MOD/GATHER etc.). Please switch to CPU mode</string>
+    <string name="error_label_missing_keypoints">label.txt missing [keypoints] section</string>
+    <string name="error_label_missing_flip_idx">label.txt missing [flip_idx] section</string>
+    <string name="error_label_missing_keypoints_link">label.txt missing [keypoints_link] section</string>
+    <string name="image_detecting">Detecting…</string>
+
+    <!-- LocalModelManager validate methods -->
+    <string name="import_missing_format_dir">\"%1$s\" is missing \"%2$s\" directory</string>
+    <string name="import_invalid_task_type_dir">\"%1$s\" is not a valid task type. Expected one of: %2$s</string>
+    <string name="import_format_dir_not_found">\"%1$s\" subdirectory not found</string>
+
+    <!-- RemoteModelManager -->
+    <string name="remote_server_error">Server error: %1$d</string>
+    <string name="remote_empty_response">Server returned empty content</string>
+    <string name="remote_http_error">Server returned HTTP %1$d</string>
+    <string name="remote_empty_body">Server returned empty response body</string>
+    <string name="remote_not_zip">File is not .zip format</string>
+    <string name="remote_download_timeout">Download timeout: %1$s</string>
+    <string name="remote_unknown_host">Cannot resolve server address: %1$s</string>
+    <string name="remote_connect_failed">Cannot connect to server: %1$s</string>
+    <string name="remote_download_error">Download failed: %1$s: %2$s</string>
+    <string name="remote_import_error">Import error: %1$s</string>
+
+    <!-- InferenceType -->
+    <string name="inference_type_end2end">End-to-End</string>
+    <string name="inference_type_traditional">Traditional</string>
+
+    <!-- TaskModelScanner -->
+    <string name="source_builtin">%1$s (Built-in)</string>
+    <string name="source_remote">%1$s (Remote)</string>
+    <string name="source_local">%1$s (Local)</string>
+
+    <!-- ========== XSelect Pipeline Strategy ========== -->
+    <string name="xselect_auto">Auto</string>
+    <string name="xselect_gl_not_available">GPU preprocessing unavailable, switched to CPU</string>
+    <string name="xselect_ahwb_not_implemented">GPU→AHWB→NPU not yet implemented</string>
+
+    <!-- PipelineStrategy -->
+    <string name="strategy_gl_zerocopy">Fastest</string>
+    <string name="strategy_gl_zerocopy_sub">Zero-copy direct, lowest latency</string>
+    <string name="strategy_gl_transit">Accelerated</string>
+    <string name="strategy_gl_transit_sub">GPU-accelerated preprocessing, balanced</string>
+    <string name="strategy_cpu_pipeline">Compatible</string>
+    <string name="strategy_cpu_pipeline_sub">Pure CPU preprocessing, most stable</string>
+    <string name="strategy_auto_select">Auto Select</string>
+    <string name="strategy_not_implemented">Not implemented</string>
+    <string name="strategy_unavailable">Unavailable</string>
+
+    <!-- BitmapUtils -->
+    <string name="error_cannot_decode_image">Cannot decode image: %1$s</string>
+
+    <!-- TipsDialogs format hint -->
+    <string name="format_package_name">{package_name}</string>
+    <string name="format_optional">(optional)</string>
+    <string name="format_selected_dir">Selected directory/</string>
+    <string name="format_task_types">Task types: detection, keypoint, segmentation, classification, oriented_bbox</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution">
+
+    <dist:module
+        dist:instant="false"
+        dist:title="@string/title_mediatek_runtime">
+        <dist:delivery>
+            <dist:install-time>
+                <dist:conditions>
+                    <dist:device-groups>
+                        <dist:device-group dist:name="Mediatek_MT6878_ANDROID_15"/>
+                        <dist:device-group dist:name="Mediatek_MT6897_ANDROID_15"/>
+                        <dist:device-group dist:name="Mediatek_MT6983_ANDROID_15"/>
+                        <dist:device-group dist:name="Mediatek_MT6985_ANDROID_15"/>
+                        <dist:device-group dist:name="Mediatek_MT6989_ANDROID_15"/>
+                        <dist:device-group dist:name="Mediatek_MT6991_ANDROID_15"/>
+                    </dist:device-groups>
+                </dist:conditions>
+            </dist:install-time>
+        </dist:delivery>
+        <dist:fusing dist:include="true" />
+    </dist:module>
+</manifest>

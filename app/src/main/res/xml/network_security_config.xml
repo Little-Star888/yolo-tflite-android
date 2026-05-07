@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 允许明文流量（HTTP）用于本地服务器 -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <!-- 针对特定域名的明文流量许可 -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- 本地服务器地址 -->
+        <domain includeSubdomains="true">192.168.50.83</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>
+    </domain-config>
+</network-security-config>

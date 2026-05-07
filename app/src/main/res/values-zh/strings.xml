@@ -1,0 +1,390 @@
+<resources>
+    <string name="app_name">Yolo TFLite</string>
+
+    <!-- ========== MainHomeScreen ========== -->
+    <string name="main_home_title">YOLO 识别</string>
+    <string name="task_detection">目标检测</string>
+    <string name="task_detection_desc">检测图像中的目标物体并标注边界框</string>
+    <string name="task_keypoint">关键点检测</string>
+    <string name="task_keypoint_desc">检测人体姿态和关键点位置</string>
+    <string name="task_segmentation">实例分割</string>
+    <string name="task_segmentation_desc">对图像中的目标进行像素级分割</string>
+    <string name="task_classification">图像分类</string>
+    <string name="task_classification_desc">对图像进行分类识别</string>
+    <string name="task_oriented_bbox">旋转框检测</string>
+    <string name="task_oriented_bbox_desc">使用旋转边界框检测倾斜目标</string>
+
+    <!-- ========== HomeScreen ========== -->
+    <string name="initializing">正在初始化…</string>
+    <string name="no_models_available">暂无可用模型</string>
+    <string name="please_add_model">请先添加模型以开始使用</string>
+    <string name="view_format_guide">查看格式说明</string>
+    <string name="model_management">模型管理</string>
+    <string name="local_import">本地导入</string>
+    <string name="remote_download">远程下载</string>
+    <string name="manage_delete">管理删除</string>
+    <string name="select_import_source">选择导入来源</string>
+    <string name="select_model_directory">选择模型目录</string>
+    <string name="select_model_archive">选择模型压缩包(仅支持.zip)</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确定</string>
+    <string name="import_success">导入成功：%1$s，共 %2$d 个模型</string>
+    <string name="import_failed">导入失败</string>
+    <string name="back_to_main">返回主界面</string>
+    <string name="confirm_back_loading">模型正在加载中，返回主界面将中断加载，确定返回吗？</string>
+    <string name="confirm_back_importing">正在导入模型，返回主界面将取消导入，确定返回吗？</string>
+    <string name="confirm_back_downloading">正在下载「%1$s」，返回主界面将取消下载，确定返回吗？</string>
+    <string name="confirm_back_default">确定返回主界面吗？</string>
+    <string name="confirm_back">确定返回</string>
+    <string name="select_detection_mode">选择识别模式</string>
+    <string name="select_model_config">请选择模型配置</string>
+    <string name="model_loading">模型加载中…</string>
+    <string name="model_ready">模型已就绪</string>
+    <string name="model_load_failed">加载失败: %1$s</string>
+    <string name="confirm_download">确认下载</string>
+    <string name="file_size">文件大小：%1$s</string>
+    <string name="download_cellular_warning">下载此文件需要消耗约 %1$s 流量，可能产生额外费用。</string>
+    <string name="continue_download">继续下载</string>
+    <string name="overwrite_confirm">覆盖确认</string>
+    <string name="overwrite_remote_exists">已存在远程下载的模型包「%1$s」，确定要覆盖吗？</string>
+    <string name="overwrite_local_exists">已存在本地导入的模型包：</string>
+    <string name="overwrite_confirm_question">确定要覆盖吗？</string>
+    <string name="overwrite">覆盖</string>
+    <string name="manage_imported_models">管理导入模型</string>
+    <string name="select_models_to_delete">选择要删除的模型</string>
+    <string name="multi_select">多选</string>
+    <string name="imported_packages_count">已导入的模型包（共 %1$d 个）：</string>
+    <string name="delete">删除</string>
+    <string name="delete_selected">删除所选 (%1$d)</string>
+    <string name="close">关闭</string>
+    <string name="confirm_delete">确认删除</string>
+    <string name="delete_package_confirm">确定要删除模型包「%1$s」吗？删除后无法恢复。</string>
+    <string name="importing_model_package">正在导入模型包…</string>
+    <string name="package_progress">%1$d/%2$d 个模型包</string>
+    <string name="importing_ellipsis">正在导入…</string>
+    <string name="download_paused">已暂停 %1$s</string>
+    <string name="downloading">正在下载 %1$s</string>
+    <string name="resume">继续</string>
+    <string name="pause">暂停</string>
+    <string name="import_success_generic">导入成功</string>
+
+    <!-- ========== CascadingDropdowns ========== -->
+    <string name="model_selection">模型选择</string>
+    <string name="model_selection_info">模型选择说明</string>
+    <string name="model_format">模型格式</string>
+    <string name="model_package">模型包</string>
+    <string name="model_size">模型尺寸</string>
+    <string name="model_file">模型文件</string>
+    <string name="inference_config">推理配置</string>
+    <string name="inference_config_info">推理配置说明</string>
+    <string name="inference_mode">推理模式</string>
+    <string name="inference_backend">推理后端</string>
+    <string name="accelerator">加速器</string>
+    <string name="confidence_threshold">置信度阈值</string>
+
+    <!-- ========== TipsDialogs - FormatHintDialog ========== -->
+    <string name="directory_structure">目录结构</string>
+    <string name="method_directory">方式一：选择模型目录</string>
+    <string name="select_task_folder">直接选择「任务类型」文件夹：</string>
+    <string name="method_archive">方式二：选择 .zip 压缩包</string>
+    <string name="archive_structure_same">压缩包内部结构与方式一相同：</string>
+    <string name="required_files">必需文件</string>
+    <string name="model_sizes_optional">模型尺寸（可选一种或多种）</string>
+    <string name="aot_precompiled">AOT 预编译模型（可选，加速 NPU）</string>
+    <string name="aot_description">在尺寸目录下创建 aot/ 子目录，放入 NPU 预编译模型，\n可跳过 JIT 编译，加速 NPU 初始化。</string>
+    <string name="aot_naming_rule">命名规则：{原始名去.tflite}_Qualcomm_{SoC型号}.tflite\n示例：yolo26n_Qualcomm_SM8650.tflite\n支持 SoC：SM8450 / SM8550 / SM8650 / SM8750 / SM8850</string>
+    <string name="got_it">知道了</string>
+
+    <!-- ========== TipsDialogs - ModelSelectTipDialog ========== -->
+    <string name="tflite_only">目前仅支持 TFLite 模型格式。</string>
+    <string name="model_package_sources">模型包来源</string>
+    <string name="sources_description">模型包有以下几种来源，各自独立存在：\n  · 内置 — App 预装的模型包\n  · 本地导入 — 从设备存储导入的模型包\n  · 远程下载 — 从服务器下载的模型包</string>
+    <string name="model_size_info">模型尺寸</string>
+    <string name="size_description">尺寸选项（n / s / m / l / x）根据当前模型包实际包含的模型动态显示，不同来源的模型包可能有不同的尺寸可选。</string>
+
+    <!-- ========== TipsDialogs - InferenceConfigTipDialog ========== -->
+    <string name="inference_mode_label">推理模式</string>
+    <string name="inference_mode_description">推理模式由上一步选择的模型自动判断得出，无需手动指定：\n  · 端到端（END2END）— 模型输出直接为检测结果\n  · 传统（TRADITIONAL）— 需要额外后处理（NMS 等）</string>
+    <string name="accelerator_compatibility">加速器兼容性</string>
+    <string name="accelerator_description">YOLO26 官方模型的加速器支持情况：\n\n传统模式 INT8：支持 CPU、GPU\n传统模式 FLOAT16：支持 CPU、GPU、NPU\n端到端模型（含 INT8）：因包含不支持的算子，仅支持 CPU</string>
+    <string name="inference_backend_label">推理后端</string>
+    <string name="backend_description">Native 后端（推荐）：\n  · 支持 JIT 编译缓存和 AOT 预编译模型\n\nJava 后端：\n  · 仅支持 AOT 预编译模型（LiteRT SDK 暂未提供 JIT 缓存 API）\n  · JIT 编译缓存需等待官方后续更新支持</string>
+
+    <!-- ========== UnifiedCameraScreen ========== -->
+    <string name="camera_title">相机拍摄识别</string>
+    <string name="capture_result">拍摄结果</string>
+    <string name="back_to_camera">返回相机</string>
+    <string name="back">返回</string>
+    <string name="capturing">正在拍摄…</string>
+    <string name="capture_complete_tap_detect">拍摄完成，点击检测按钮进行识别</string>
+    <string name="load_image_failed">加载图片失败: %1$s</string>
+    <string name="capture_failed">拍摄失败: %1$s</string>
+    <string name="detector_not_ready">检测器未就绪</string>
+    <string name="detecting">正在检测…</string>
+    <string name="detection_complete">检测完成</string>
+    <string name="detection_failed">检测失败: %1$s</string>
+    <string name="camera_permission_denied">相机权限未授予</string>
+    <string name="grant_camera_permission">授予相机权限</string>
+    <string name="select_model_first">请先在配置页选择模型</string>
+    <string name="loading_model">正在加载模型…</string>
+    <string name="model_load_failed_camera">模型加载失败: %1$s</string>
+    <string name="switch_camera">切换摄像头</string>
+    <string name="flash">闪光灯</string>
+    <string name="hardware_accel">硬件加速</string>
+    <string name="accel_tooltip">硬件加速：使用 GPU 进行图像预处理，可提升检测帧率</string>
+    <string name="realtime_detect">实时检测</string>
+    <string name="photo_detect">拍照检测</string>
+    <string name="captured_image">拍摄图片</string>
+    <string name="inference_time">推理耗时</string>
+    <string name="no_targets_hint">未识别到任何目标，可尝试降低置信度阈值后重新检测</string>
+    <string name="detection_results_count">检测结果 (%1$d)</string>
+    <string name="start_detect">开始检测</string>
+    <string name="preview">预览</string>
+
+    <!-- ========== ImageScreen ========== -->
+    <string name="image_title">单张图片识别</string>
+    <string name="select_image">选择图片</string>
+    <string name="image_label">图片</string>
+    <string name="error_prefix">错误: %1$s</string>
+    <string name="please_select_image">请选择一张图片进行检测</string>
+    <string name="redetect">重新识别</string>
+    <string name="image_preview">图片预览</string>
+
+    <!-- ========== DirectoryScreen ========== -->
+    <string name="directory_title">图片目录识别</string>
+    <string name="select_image_directory">选择图片目录</string>
+    <string name="please_select_directory">请选择一个图片目录进行批量检测</string>
+    <string name="directory_name">目录: %1$s</string>
+    <string name="directory_stats">已识别 %1$d 张，检测到目标 %2$d 张</string>
+
+    <!-- ========== VideoScreen ========== -->
+    <string name="video_title">本地视频识别</string>
+    <string name="select_video">选择视频</string>
+    <string name="detection_settings">检测设置</string>
+    <string name="detection_interval">检测间隔</string>
+    <string name="interval_ms">每 %1$dms 检测一次</string>
+    <string name="interval_seconds">每 %1$ds 检测一次</string>
+    <string name="save_frame_images">保存检测帧图片</string>
+    <string name="save_frame_tip_title">保存帧图片提示</string>
+    <string name="save_frame_tip_message">开启后，每一帧检测结果图片会保留在内存中。如果视频较长或采样间隔较短，可能产生数百甚至上千张图片，导致：\n\n· 内存占用持续增长，严重时可能崩溃\n· 页面滚动和加载变慢\n\n建议：\n· 较长视频适当增大采样间隔（如 2~5 秒）\n· 无需查看图片时可关闭此选项</string>
+    <string name="start_detection">开始检测</string>
+    <string name="cancel_detection">取消检测</string>
+    <string name="detection_statistics">检测统计</string>
+    <string name="frames_processed">已处理: %1$d 帧</string>
+    <string name="total_detections">总检测目标: %1$d</string>
+    <string name="avg_inference_time">平均推理耗时: %.2f ms</string>
+    <string name="frame_results">帧检测结果 (%1$d)</string>
+    <string name="frame_number">帧 #%1$d</string>
+    <string name="frame_timestamp">第 %1$dms</string>
+    <string name="inference_time_ms">耗时 %.1fms</string>
+    <string name="detected_targets">检测到 %1$d 个目标</string>
+    <string name="more_targets">… 还有 %1$d 个</string>
+    <string name="collapse">收起</string>
+    <string name="seconds_suffix">s</string>
+    <string name="seconds_progress">%1$ds / %2$ds</string>
+
+    <!-- ========== DetectorStateBanner ========== -->
+    <string name="select_model_banner">请先在配置页选择模型</string>
+    <string name="loading_model_banner">正在加载模型…</string>
+    <string name="model_error_banner">模型加载失败: %1$s</string>
+
+    <!-- ========== DetectionResultCard ========== -->
+    <string name="failed">失败</string>
+    <string name="detected_count">检测到 %1$d 个目标</string>
+    <string name="no_targets">未检测到目标</string>
+    <string name="detection_result">检测结果</string>
+    <string name="original_image">原图</string>
+
+    <!-- ========== FullScreenImageDialog ========== -->
+    <string name="close_dialog">关闭</string>
+    <string name="save_image">保存图片</string>
+    <string name="save_image_success">已保存到相册</string>
+    <string name="save_image_failed">保存失败</string>
+    <string name="save_image_no_bitmap">无可保存的图片</string>
+
+    <!-- ========== RemoteDownloadDialog ========== -->
+    <string name="remote_download_title">远程下载模型</string>
+    <string name="server_address">服务器地址</string>
+    <string name="loading_ellipsis">加载中…</string>
+    <string name="load_model_list">加载模型列表</string>
+    <string name="available_models">可用模型（%1$d 个）：</string>
+    <string name="unknown">未知</string>
+    <string name="cancel_download">取消下载</string>
+    <string name="download">下载</string>
+    <string name="download_failed">下载失败</string>
+    <string name="download_cancelled">已取消下载</string>
+
+    <!-- ========== DetectionMode ========== -->
+    <string name="mode_camera">相机拍摄识别</string>
+    <string name="mode_camera_desc">支持实时检测和拍照检测</string>
+    <string name="mode_image">单张图片识别</string>
+    <string name="mode_image_desc">选择单张图片进行检测</string>
+    <string name="mode_directory">图片目录识别</string>
+    <string name="mode_directory_desc">批量检测目录下所有图片</string>
+    <string name="mode_video">本地视频识别</string>
+    <string name="mode_video_desc">选择本地视频进行检测</string>
+
+    <!-- ========== TaskType ========== -->
+    <string name="tasktype_detection">目标检测</string>
+    <string name="tasktype_detection_desc">检测图像中的目标物体并标注边界框</string>
+    <string name="tasktype_detection_title">目标检测</string>
+    <string name="tasktype_detection_hint_title">导入目标检测模型包的格式要求</string>
+    <string name="tasktype_detection_hint_summary">适用于 YOLO 目标检测模型（如yolo26n-detect）</string>
+    <string name="tasktype_detection_hint_note">label.txt 中每行一个类别名称，如：\nperson\ncar\ndog</string>
+    <string name="tasktype_keypoint">关键点检测</string>
+    <string name="tasktype_keypoint_desc">检测目标关键点位置（人体姿态、手部关键点、游戏区域等）</string>
+    <string name="tasktype_keypoint_title">关键点检测</string>
+    <string name="tasktype_keypoint_hint_title">导入关键点检测模型包的格式要求</string>
+    <string name="tasktype_keypoint_hint_summary">适用于 YOLO 关键点检测模型（如yolo26n-pose、自定义关键点模型等）\n模型输出包含目标边界框和关键点坐标</string>
+    <string name="tasktype_keypoint_hint_note">label.txt — 统一的配置文件，支持多 section 格式：\n\n[classes]\nperson\n\n[keypoints]\nnose\nleft_eye\nright_eye\n...\n\n[flip_idx]\n0,2,1,4,3,6,5,8,7,10,9,12,11,14,13,16,15\n\n[keypoints_link]\n0,1\n1,2\n2,3\n...\n\n⚠️ 关键点任务的 label.txt 必须包含 [classes]、[keypoints]、[flip_idx]、[keypoints_link] 四个 section（从训练配置中获取）</string>
+    <string name="tasktype_segmentation">实例分割</string>
+    <string name="tasktype_segmentation_desc">对图像中的目标进行像素级分割</string>
+    <string name="tasktype_segmentation_title">实例分割</string>
+    <string name="tasktype_segmentation_hint_title">导入实例分割模型包的格式要求</string>
+    <string name="tasktype_segmentation_hint_summary">适用于 YOLO 实例分割模型（如yolo26n-seg）\n模型输出包含边界框和像素级分割掩码</string>
+    <string name="tasktype_segmentation_hint_note">label.txt 中每行一个类别名称，与目标检测格式相同</string>
+    <string name="tasktype_classification">图像分类</string>
+    <string name="tasktype_classification_desc">对图像进行分类识别</string>
+    <string name="tasktype_classification_title">图像分类</string>
+    <string name="tasktype_classification_hint_title">导入图像分类模型包的格式要求</string>
+    <string name="tasktype_classification_hint_summary">适用于 YOLO 图像分类模型（如yolo26n-cls）\n模型输出为图像类别及置信度</string>
+    <string name="tasktype_classification_hint_note">label.txt 中每行一个类别名称，按类别索引顺序排列</string>
+    <string name="tasktype_obb">旋转框检测</string>
+    <string name="tasktype_obb_desc">使用旋转边界框检测倾斜目标</string>
+    <string name="tasktype_obb_title">旋转框检测</string>
+    <string name="tasktype_obb_hint_title">导入旋转框检测模型包的格式要求</string>
+    <string name="tasktype_obb_hint_summary">适用于 YOLO OBB 模型（如yolo26n-obb）\n模型输出包含旋转角度的边界框</string>
+    <string name="tasktype_obb_hint_note">label.txt 中每行一个类别名称，与目标检测格式相同</string>
+
+    <!-- ========== Settings ========== -->
+    <string name="model_ready_jit">模型已就绪（JIT 缓存）</string>
+    <string name="model_ready_aot">模型已就绪（AOT 预编译）</string>
+    <string name="settings">设置</string>
+    <string name="language">语言</string>
+    <string name="language_zh">中文</string>
+    <string name="language_en">English</string>
+
+    <!-- ViewModel/Manager 错误消息 -->
+    <string name="error_detector_init_failed">检测器初始化失败</string>
+    <string name="error_detector_not_initialized">检测器未初始化，请先加载模型</string>
+    <string name="error_import_preparing">准备导入…</string>
+    <string name="error_importing_package">正在导入: %1$s</string>
+    <string name="error_load_failed">加载失败</string>
+    <string name="error_download_cancelled">已取消下载</string>
+    <string name="error_download_failed">下载失败</string>
+    <string name="error_model_load_failed">模型加载失败：%1$s</string>
+
+    <!-- VideoViewModel -->
+    <string name="video_select_first">请先选择视频</string>
+    <string name="video_analyzing">正在分析视频…</string>
+    <string name="video_start_detect">开始检测 (0/%1$s)</string>
+    <string name="video_detecting">正在检测 %1$s / %2$s</string>
+    <string name="video_complete">完成：%1$d 个样本，检测到 %2$d 个目标 (总时长 %3$s)</string>
+    <string name="video_process_failed">处理失败: %1$s</string>
+    <string name="video_cancelled">已取消</string>
+
+    <!-- ImageViewModel -->
+    <string name="image_select_first">请先选择图片</string>
+    <string name="image_detect_complete">检测完成，共检测到 %1$d 个目标</string>
+    <string name="image_detect_failed">检测失败: %1$s</string>
+
+    <!-- DirectoryViewModel -->
+    <string name="dir_scanning">正在扫描目录…</string>
+    <string name="dir_no_access">无法访问目录</string>
+    <string name="dir_no_images">目录中没有图片</string>
+    <string name="dir_detecting">正在识别 %1$d/%2$d</string>
+    <string name="dir_complete">已完成：检测到 %1$d/%2$d 张有目标</string>
+    <string name="dir_cannot_open">无法打开文件</string>
+    <string name="dir_cannot_decode">无法解码图片</string>
+
+    <!-- LocalModelManager -->
+    <string name="import_dir_not_exist">目录不存在或不是有效目录</string>
+    <string name="import_invalid_task_type">第一级目录「%1$s」不是有效的任务类型。应为以下之一：%2$s</string>
+    <string name="import_wrong_module">模型包属于「%1$s」模块，当前处于「%2$s」模块，请切换到对应模块后导入</string>
+    <string name="import_missing_models_dir">包「%1$s」下缺少 models 目录</string>
+    <string name="import_missing_label">包「%1$s」下缺少 label.txt 文件</string>
+    <string name="import_no_tflite_files">包「%1$s」/「%2$s」下没有 tflite 模型文件，跳过</string>
+    <string name="import_no_valid_models">包「%1$s」没有任何有效模型文件，跳过</string>
+    <string name="import_aot_mismatch">包「%1$s」/「%2$s」/aot/ 中的 AOT 文件「%3$s」命名格式不符合当前设备（Vendor: %4$s, SoC: %5$s），将不会被使用</string>
+    <string name="import_cannot_access_dir">无法访问所选目录</string>
+    <string name="import_dir_structure_mismatch">目录结构不符合规范：未找到「%1$s」子目录</string>
+    <string name="import_dir_structure_invalid">目录结构不符合规范：%1$s</string>
+    <string name="import_missing_tflite_dir">缺少 tflite 目录</string>
+    <string name="import_need_subdirs">目录结构不匹配，tflite 目录下需包含 {packageName}/label.txt 和 models/ 子目录</string>
+    <string name="import_cancelled">已取消导入</string>
+    <string name="import_no_valid_files">未找到有效的模型文件，请检查目录结构</string>
+    <string name="import_cannot_read_archive">无法读取压缩包：%1$s</string>
+    <string name="import_archive_structure_mismatch">压缩包「%1$s」目录结构不符合规范：缺少「%2$s」目录</string>
+    <string name="import_archive_structure_invalid">压缩包「%1$s」目录结构不符合规范：%2$s</string>
+    <string name="import_archive_no_valid">压缩包「%1$s」内未找到有效的模型目录结构（需包含 label.txt 和 models/ 子目录）</string>
+    <string name="import_archive_extract_failed">解压「%1$s」失败: %2$s</string>
+    <string name="import_remote_structure_mismatch">远程包目录结构不符合规范：缺少「%1$s」目录</string>
+    <string name="import_remote_structure_invalid">远程包目录结构不符合规范：%1$s</string>
+    <string name="import_remote_no_valid">远程包内未找到有效的模型目录结构</string>
+    <string name="import_remote_failed">导入远程包失败: %1$s</string>
+    <string name="import_unknown_package">未知包</string>
+    <string name="import_unknown_file">未知文件</string>
+    <string name="import_size_dir_invalid">包「%1$s」中尺寸目录「%2$s」无效，跳过</string>
+
+    <!-- SharedDetectorViewModel remaining -->
+    <string name="error_batch_import_failed">%1$d 个导入失败</string>
+    <string name="error_batch_archive_import_failed">%1$d 个压缩包导入失败</string>
+    <string name="error_npu_unsupported_dsp">NPU不支持该模型加速，DSP访问被系统拒绝，请切换加速模式</string>
+    <string name="error_npu_unsupported">NPU不支持该模型加速，请切换加速模式</string>
+    <string name="error_gpu_unsupported">GPU不支持该模型的某些算子（INT64/FLOOR_MOD/GATHER等），请切换到CPU模式</string>
+    <string name="error_label_missing_keypoints">label.txt 中缺少 [keypoints] section</string>
+    <string name="error_label_missing_flip_idx">label.txt 中缺少 [flip_idx] section</string>
+    <string name="error_label_missing_keypoints_link">label.txt 中缺少 [keypoints_link] section</string>
+    <string name="image_detecting">正在检测…</string>
+
+    <!-- LocalModelManager validate methods -->
+    <string name="import_missing_format_dir">「%1$s」下缺少「%2$s」目录</string>
+    <string name="import_invalid_task_type_dir">「%1$s」不是有效的任务类型。应为以下之一：%2$s</string>
+    <string name="import_format_dir_not_found">未找到「%1$s」子目录</string>
+
+    <!-- RemoteModelManager -->
+    <string name="remote_server_error">服务器响应失败: %1$d</string>
+    <string name="remote_empty_response">服务器返回空内容</string>
+    <string name="remote_http_error">服务器返回 HTTP %1$d</string>
+    <string name="remote_empty_body">服务器返回空响应体</string>
+    <string name="remote_not_zip">文件不是 .zip 格式</string>
+    <string name="remote_download_timeout">下载超时：%1$s</string>
+    <string name="remote_unknown_host">无法解析服务器地址：%1$s</string>
+    <string name="remote_connect_failed">无法连接服务器：%1$s</string>
+    <string name="remote_download_error">下载失败：%1$s: %2$s</string>
+    <string name="remote_import_error">导入异常: %1$s</string>
+
+    <!-- InferenceType -->
+    <string name="inference_type_end2end">端到端</string>
+    <string name="inference_type_traditional">传统模式</string>
+
+    <!-- TaskModelScanner -->
+    <string name="source_builtin">%1$s（内置）</string>
+    <string name="source_remote">%1$s（远程下载）</string>
+    <string name="source_local">%1$s（本地导入）</string>
+
+    <!-- ========== XSelect 管线策略选择器 ========== -->
+    <string name="xselect_auto">自动</string>
+    <string name="xselect_gl_not_available">GPU预处理不可用，已切换到兼容模式</string>
+    <string name="xselect_ahwb_not_implemented">GPU→AHWB→NPU 暂未实现</string>
+
+    <!-- PipelineStrategy -->
+    <string name="strategy_gl_zerocopy">极速</string>
+    <string name="strategy_gl_zerocopy_sub">零拷贝直通，延迟最低</string>
+    <string name="strategy_gl_transit">加速</string>
+    <string name="strategy_gl_transit_sub">GPU加速预处理，性能均衡</string>
+    <string name="strategy_cpu_pipeline">兼容</string>
+    <string name="strategy_cpu_pipeline_sub">纯CPU进行预处理，最稳定</string>
+    <string name="strategy_auto_select">自动选择</string>
+    <string name="strategy_not_implemented">暂未实现</string>
+    <string name="strategy_unavailable">不可用</string>
+
+    <!-- BitmapUtils -->
+    <string name="error_cannot_decode_image">无法解码图片: %1$s</string>
+
+    <!-- TipsDialogs format hint -->
+    <string name="format_package_name">{模型包名}</string>
+    <string name="format_optional">（可选）</string>
+    <string name="format_selected_dir">选择的目录/</string>
+    <string name="format_task_types">任务类型：detection、keypoint、segmentation、classification、oriented_bbox</string>
+</resources>

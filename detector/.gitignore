@@ -1,0 +1,7 @@
+/build
+
+# CMake 构建缓存
+.cxx/
+
+# LiteRT C++ SDK（CMake 配置阶段自动下载）
+src/main/cpp/litert_cc_sdk/

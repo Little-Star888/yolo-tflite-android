@@ -1,0 +1,48 @@
+<config:device-targeting-config
+    xmlns:config="http://schemas.android.com/apk/config">
+    <!-- Qualcomm Snapdragon 8 Gen 1 = SM8450 (Hexagon v69) -->
+    <config:device-group name="Qualcomm_SM8450">
+        <config:device-selector>
+            <config:system-on-chip manufacturer="Qualcomm" model="SM8450"/>
+        </config:device-selector>
+        <config:device-selector>
+            <config:system-on-chip manufacturer="QTI" model="SM8450"/>
+        </config:device-selector>
+    </config:device-group>
+    <!-- Qualcomm Snapdragon 8 Gen 2 = SM8550 (Hexagon v73) -->
+    <config:device-group name="Qualcomm_SM8550">
+        <config:device-selector>
+            <config:system-on-chip manufacturer="Qualcomm" model="SM8550"/>
+        </config:device-selector>
+        <config:device-selector>
+            <config:system-on-chip manufacturer="QTI" model="SM8550"/>
+        </config:device-selector>
+    </config:device-group>
+    <!-- Qualcomm Snapdragon 8 Gen 3 = SM8650 (Hexagon v75) — 小米14 Pro -->
+    <config:device-group name="Qualcomm_SM8650">
+        <config:device-selector>
+            <config:system-on-chip manufacturer="Qualcomm" model="SM8650"/>
+        </config:device-selector>
+        <config:device-selector>
+            <config:system-on-chip manufacturer="QTI" model="SM8650"/>
+        </config:device-selector>
+    </config:device-group>
+    <!-- Qualcomm Snapdragon 8 Elite = SM8750 (Hexagon v79) -->
+    <config:device-group name="Qualcomm_SM8750">
+        <config:device-selector>
+            <config:system-on-chip manufacturer="Qualcomm" model="SM8750"/>
+        </config:device-selector>
+        <config:device-selector>
+            <config:system-on-chip manufacturer="QTI" model="SM8750"/>
+        </config:device-selector>
+    </config:device-group>
+    <!-- Qualcomm Snapdragon 8 Elite Gen 5 = SM8850 (Hexagon v81) -->
+    <config:device-group name="Qualcomm_SM8850">
+        <config:device-selector>
+            <config:system-on-chip manufacturer="Qualcomm" model="SM8850"/>
+        </config:device-selector>
+        <config:device-selector>
+            <config:system-on-chip manufacturer="QTI" model="SM8850"/>
+        </config:device-selector>
+    </config:device-group>
+</config:device-targeting-config>

@@ -1,0 +1,79 @@
+# litert_cc_sdk/.gitattributes
+* text=auto eol=lf
+
+# ── C/C++ 源文件 ──
+*.c text eol=lf
+*.cpp text eol=lf
+*.cc text eol=lf
+*.h text eol=lf
+*.hpp text eol=lf
+
+# ── Kotlin / Java ──
+*.kt text eol=lf
+*.java text eol=lf
+
+# ── CMake / 构建系统 ──
+CMakeLists.txt text eol=lf
+*.cmake text eol=lf
+*.gradle text eol=lf
+*.gradle.kts text eol=lf
+*.pro text eol=lf
+
+# ── 配置 / 数据 ──
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.xml text eol=lf
+*.in text eol=lf
+*.properties text eol=lf
+
+# ── 脚本 ──
+*.sh text eol=lf
+*.py text eol=lf
+Makefile text eol=lf
+
+# ── 文档 ──
+*.md text eol=lf
+*.txt text eol=lf
+LICENSE text eol=lf
+
+# ── GLSL Shader ──
+*.glsl text eol=lf
+*.vert text eol=lf
+*.frag text eol=lf
+*.comp text eol=lf
+
+# ── Windows 特定文件保持 CRLF ──
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# ── 二进制文件（禁止换行符替换）──
+*.so binary
+*.a binary
+*.dll binary
+*.lib binary
+*.exe binary
+*.bin binary
+*.o binary
+
+# ── Android / LiteRT 相关二进制 ──
+*.tflite binary
+*.apk binary
+*.aar binary
+*.jar binary
+*.dex binary
+*.keystore binary
+
+# ── 图像 / 媒体 ──
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+
+# ── 压缩包 ──
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
