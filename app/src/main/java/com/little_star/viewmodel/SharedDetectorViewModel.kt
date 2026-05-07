@@ -206,11 +206,11 @@ class SharedDetectorViewModel(
         // 在后台线程初始化模型扫描器，避免主线程卡顿
         viewModelScope.launch(Dispatchers.IO) {
             _modelScanner = TaskModelScanner(getApplication(), taskType)
+            // 先预加载默认模型，再通知 UI 就绪
+            // 确保 UI 渲染时模型已 Ready，CascadingDropdowns 回调直接命中三层防重入
+            preloadDefaultDetector()
             _scannerReady.value = true
             initialized = true
-            // 立即预加载默认模型（CPU 模式，无 LogCapture 延迟）
-            // 使首页 LaunchedEffect 回调触发时直接命中 Ready 状态，零等待
-            preloadDefaultDetector()
         }
     }
 
@@ -1174,19 +1174,13 @@ class SharedDetectorViewModel(
         return count
     }
 
-    /**
-     * 获取已导入的模型包列表
-     */
-    fun getImportedPackages(): List<String> {
-        return LocalModelManager.getImportedPackages(getApplication(), taskType)
-    }
+    /** 获取已导入的模型包列表（从 scanner modelTree 推导，无文件系统 I/O） */
+    fun getImportedPackages(): List<String> =
+        _modelScanner?.getImportedPackageNames() ?: emptyList()
 
-    /**
-     * 获取远程下载的模型包列表
-     */
-    fun getDownloadedPackages(): List<String> {
-        return LocalModelManager.getDownloadedPackages(getApplication(), taskType)
-    }
+    /** 获取远程下载的模型包列表（从 scanner modelTree 推导，无文件系统 I/O） */
+    fun getDownloadedPackages(): List<String> =
+        _modelScanner?.getDownloadedPackageNames() ?: emptyList()
 
     /**
      * ViewModel 清理时释放检测器资源

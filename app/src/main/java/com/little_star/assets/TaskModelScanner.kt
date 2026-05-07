@@ -177,6 +177,19 @@ class TaskModelScanner(
     ): List<ModelDescriptor> =
         modelTree[format]?.get(packageName)?.get(size)?.toList() ?: emptyList()
 
+    /** 获取本地导入的模型包名列表（从 modelTree 推导，无文件系统 I/O） */
+    fun getImportedPackageNames(): List<String> =
+        modelTree.values.flatMap { it.keys }
+            .filter { !it.endsWith(BUILTIN_KEY_SUFFIX) && !it.endsWith(REMOTE_KEY_SUFFIX) }
+            .distinct()
+
+    /** 获取远程下载的模型包名列表（从 modelTree 推导，无文件系统 I/O） */
+    fun getDownloadedPackageNames(): List<String> =
+        modelTree.values.flatMap { it.keys }
+            .filter { it.endsWith(REMOTE_KEY_SUFFIX) }
+            .map { keyToPackageName(it) }
+            .distinct()
+
     /**
      * 根据模型输出 shape 自动检测推理类型
      *

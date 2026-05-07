@@ -185,9 +185,7 @@ fun CascadingDropdowns(
         // ── Step 2: 检测推理类型（IO 线程） ──
         val model = selectedModel
         if (model != null) {
-            val detected = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                scanner.detectInferenceType(model)
-            }
+            val detected = scanner.detectInferenceType(model)
             selectedInferenceType = detected
 
             // ── Step 3: 触发回调（同一协程内顺序执行） ──
