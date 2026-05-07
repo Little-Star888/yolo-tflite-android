@@ -101,6 +101,17 @@ class SharedDetectorViewModel(
     private val _isImporting = MutableStateFlow<Boolean>(false)
     val isImporting: StateFlow<Boolean> = _isImporting.asStateFlow()
 
+    /** 提前显示导入中状态（在 peek/冲突检测阶段调用，让 UI 立即响应） */
+    fun preImport(textResId: Int = R.string.importing_model_package, extracting: Boolean = false) {
+        _isImporting.value = true
+        _importProgress.value = LocalModelManager.ImportProgress(
+            currentPackage = 0,
+            totalPackages = 0,
+            currentPackageName = getApplication<Application>().getString(textResId),
+            isExtracting = extracting
+        )
+    }
+
     /** 导入进度 */
     private val _importProgress = MutableStateFlow<LocalModelManager.ImportProgress?>(null)
     val importProgress: StateFlow<LocalModelManager.ImportProgress?> = _importProgress.asStateFlow()
@@ -555,12 +566,16 @@ class SharedDetectorViewModel(
             override fun onStart(totalPackages: Int) {
                 currentZipTotal = totalPackages
                 cumulativeTotal += totalPackages
+                // 解压阶段结束，转为导入阶段
                 if (_importProgress.value == null) {
                     _importProgress.value = LocalModelManager.ImportProgress(
                         currentPackage = 0,
                         totalPackages = cumulativeTotal,
-                        currentPackageName = getApplication<Application>().getString(R.string.error_import_preparing)
+                        currentPackageName = getApplication<Application>().getString(R.string.error_import_preparing),
+                        isExtracting = false
                     )
+                } else {
+                    _importProgress.value = _importProgress.value?.copy(isExtracting = false)
                 }
             }
 
@@ -606,7 +621,11 @@ class SharedDetectorViewModel(
      */
     fun importModels(uri: Uri, onResult: (LocalModelManager.ImportResult) -> Unit) {
         _isImporting.value = true
-        _importProgress.value = null
+        _importProgress.value = LocalModelManager.ImportProgress(
+            currentPackage = 0,
+            totalPackages = 0,
+            currentPackageName = getApplication<Application>().getString(R.string.importing_model_package)
+        )
         var cancelled = false
         importJob = viewModelScope.launch(Dispatchers.IO) {
             val progressCallback = createImportProgressCallback()
@@ -645,7 +664,12 @@ class SharedDetectorViewModel(
      */
     fun importModels(uris: List<Uri>, onResult: (LocalModelManager.ImportResult) -> Unit) {
         _isImporting.value = true
-        _importProgress.value = null
+        _importProgress.value = LocalModelManager.ImportProgress(
+            currentPackage = 0,
+            totalPackages = 0,
+            currentPackageName = getApplication<Application>().getString(R.string.extracting_zip),
+            isExtracting = true
+        )
         var cancelled = false
         importJob = viewModelScope.launch(Dispatchers.IO) {
             var totalModels = 0
@@ -713,7 +737,12 @@ class SharedDetectorViewModel(
      */
     fun importArchives(uris: List<Uri>, onResult: (LocalModelManager.ImportResult) -> Unit) {
         _isImporting.value = true
-        _importProgress.value = null
+        _importProgress.value = LocalModelManager.ImportProgress(
+            currentPackage = 0,
+            totalPackages = 0,
+            currentPackageName = getApplication<Application>().getString(R.string.extracting_zip),
+            isExtracting = true
+        )
         var cancelled = false
         importJob = viewModelScope.launch(Dispatchers.IO) {
             var totalModels = 0
@@ -979,6 +1008,13 @@ class SharedDetectorViewModel(
         if (downloadGeneration == gen) {
             _downloadProgress.value = 100
             _downloadSpeed.value = 0L
+            // 提前设置解压中状态，UI 在 delay 期间就能正确显示
+            _importProgress.value = LocalModelManager.ImportProgress(
+                currentPackage = 0,
+                totalPackages = 0,
+                currentPackageName = getApplication<Application>().getString(R.string.extracting_zip),
+                isExtracting = true
+            )
         }
         kotlinx.coroutines.delay(300)
 
@@ -987,11 +1023,12 @@ class SharedDetectorViewModel(
             pausedTempFilePath = null
             return
         }
-
+        val importCb = createImportProgressCallback()
         val result = LocalModelManager.importRemoteFromArchive(
             getApplication(),
             tempFile,
-            taskType
+            taskType,
+            importCb
         )
         tempFile.delete()
 

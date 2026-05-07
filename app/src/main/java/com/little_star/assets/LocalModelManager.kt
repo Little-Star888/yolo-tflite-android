@@ -125,7 +125,8 @@ object LocalModelManager {
         val currentPackage: Int = 0,      // 当前第几个包（从1开始）
         val totalPackages: Int = 0,       // 总包数
         val currentPackageName: String = "", // 当前包名称
-        val completedPackages: List<PackageResult> = emptyList() // 已完成的包结果
+        val completedPackages: List<PackageResult> = emptyList(), // 已完成的包结果
+        val isExtracting: Boolean = false // zip解压阶段（解压中→导入中）
     ) {
         val progressPercent: Int get() = if (totalPackages > 0) (currentPackage * 100 / totalPackages) else 0
     }

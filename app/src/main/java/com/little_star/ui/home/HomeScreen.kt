@@ -230,6 +230,7 @@ fun HomeScreen(
         contract = ActivityResultContracts.OpenDocumentTree()
     ) { uri ->
         uri?.let {
+            sharedViewModel.preImport()
             coroutineScope.launch {
                 val packages = withContext(Dispatchers.IO) {
                     com.little_star.assets.LocalModelManager.peekPackageNamesFromDirectory(
@@ -269,6 +270,7 @@ fun HomeScreen(
         contract = ActivityResultContracts.OpenMultipleDocuments()
     ) { uris ->
         uris.takeIf { it.isNotEmpty() }?.let { selectedUris ->
+            sharedViewModel.preImport(R.string.extracting_zip, extracting = true)
             // 读取 zip 内容获取实际包名并检查冲突
             coroutineScope.launch {
                 val allConflicts = mutableSetOf<String>()
@@ -566,6 +568,89 @@ fun HomeScreen(
         )
     }
 
+    // 本地导入覆盖确认对话框（放在 hasModels 分支之前，确保始终可渲染）
+    if (showLocalOverwriteConfirm.isNotEmpty()) {
+        AlertDialog(
+            onDismissRequest = {
+                showLocalOverwriteConfirm = emptyList()
+                pendingDirectoryUri = null
+                pendingArchiveUris = emptyList()
+                sharedViewModel.cancelImport()
+            },
+            title = { Text(stringResource(R.string.overwrite_confirm)) },
+            text = {
+                Column {
+                    Text(stringResource(R.string.overwrite_local_exists))
+                    Spacer(modifier = Modifier.height(4.dp))
+                    showLocalOverwriteConfirm.forEach { pkg ->
+                        Text("  • $pkg", style = MaterialTheme.typography.bodyMedium)
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(stringResource(R.string.overwrite_confirm_question))
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val dirUri = pendingDirectoryUri
+                        val arcUris = pendingArchiveUris
+                        showLocalOverwriteConfirm = emptyList()
+                        pendingDirectoryUri = null
+                        pendingArchiveUris = emptyList()
+                        if (dirUri != null) {
+                            sharedViewModel.importModels(dirUri) { result ->
+                                if (result.success) {
+                                    val pkgInfo =
+                                        if (result.packageNames.size > 1) result.packageNames.joinToString(
+                                            "、"
+                                        ) else result.packageName
+                                    importStatus =
+                                        strings.importSuccess(pkgInfo, result.modelCount)
+                                    modelRefreshKey++
+                                } else {
+                                    showImportError = result.error ?: strings.importFailed
+                                }
+                            }
+                        } else if (arcUris.isNotEmpty()) {
+                            sharedViewModel.importArchives(arcUris) { result ->
+                                modelRefreshKey++
+                                if (result.successCount > 0) {
+                                    val pkgInfo =
+                                        if (result.packageNames.size > 1) result.packageNames.joinToString(
+                                            "、"
+                                        ) else result.packageName
+                                    importStatus =
+                                        strings.importSuccess(pkgInfo, result.modelCount)
+                                }
+                                if (result.failCount > 0) {
+                                    showImportError = if (result.errors.size == 1) {
+                                        result.errors.first()
+                                    } else {
+                                        result.errors.mapIndexed { index, error -> "${index + 1}. $error" }
+                                            .joinToString("\n")
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text(stringResource(R.string.overwrite))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showLocalOverwriteConfirm = emptyList()
+                    pendingDirectoryUri = null
+                    pendingArchiveUris = emptyList()
+                    sharedViewModel.cancelImport()
+                }) { Text(stringResource(R.string.cancel)) }
+            }
+        )
+    }
+
     if (!hasModels) {
         // 无模型时：只显示标题栏 + 全屏居中的导入按钮
         Column(
@@ -640,13 +725,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // 状态提示区域（在按钮上方）
-                    if (isPostDownloadImporting) {
-                        PostDownloadImportCard(
-                            importProgress = importProgress,
-                            modifier = Modifier.fillMaxWidth(0.85f)
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                    } else if (isImporting && downloadingModelName != null) {
+                    if (isImporting && downloadingModelName != null && downloadProgress < 100) {
                         DownloadProgressCard(
                             downloadingModelName = downloadingModelName,
                             downloadProgress = downloadProgress,
@@ -776,10 +855,7 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         // 导入/下载状态提示（在按钮上方）
-        if (isPostDownloadImporting) {
-            PostDownloadImportCard(importProgress = importProgress)
-            Spacer(modifier = Modifier.height(8.dp))
-        } else if (isImporting && downloadingModelName != null) {
+        if (isImporting && downloadingModelName != null && downloadProgress < 100) {
             DownloadProgressCard(
                 downloadingModelName = downloadingModelName,
                 downloadProgress = downloadProgress,
@@ -1016,87 +1092,6 @@ fun HomeScreen(
                 },
                 dismissButton = {
                     TextButton(onClick = { showDeleteConfirmDialog = null }) { Text(stringResource(R.string.cancel)) }
-                }
-            )
-        }
-
-        // 本地导入覆盖确认对话框
-        if (showLocalOverwriteConfirm.isNotEmpty()) {
-            AlertDialog(
-                onDismissRequest = {
-                    showLocalOverwriteConfirm = emptyList()
-                    pendingDirectoryUri = null
-                    pendingArchiveUris = emptyList()
-                },
-                title = { Text(stringResource(R.string.overwrite_confirm)) },
-                text = {
-                    Column {
-                        Text(stringResource(R.string.overwrite_local_exists))
-                        Spacer(modifier = Modifier.height(4.dp))
-                        showLocalOverwriteConfirm.forEach { pkg ->
-                            Text("  • $pkg", style = MaterialTheme.typography.bodyMedium)
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(stringResource(R.string.overwrite_confirm_question))
-                    }
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            val dirUri = pendingDirectoryUri
-                            val arcUris = pendingArchiveUris
-                            showLocalOverwriteConfirm = emptyList()
-                            pendingDirectoryUri = null
-                            pendingArchiveUris = emptyList()
-                            if (dirUri != null) {
-                                sharedViewModel.importModels(dirUri) { result ->
-                                    if (result.success) {
-                                        val pkgInfo =
-                                            if (result.packageNames.size > 1) result.packageNames.joinToString(
-                                                "、"
-                                            ) else result.packageName
-                                        importStatus =
-                                            strings.importSuccess(pkgInfo, result.modelCount)
-                                        modelRefreshKey++
-                                    } else {
-                                        showImportError = result.error ?: strings.importFailed
-                                    }
-                                }
-                            } else if (arcUris.isNotEmpty()) {
-                                sharedViewModel.importArchives(arcUris) { result ->
-                                    modelRefreshKey++
-                                    if (result.successCount > 0) {
-                                        val pkgInfo =
-                                            if (result.packageNames.size > 1) result.packageNames.joinToString(
-                                                "、"
-                                            ) else result.packageName
-                                        importStatus =
-                                            strings.importSuccess(pkgInfo, result.modelCount)
-                                    }
-                                    if (result.failCount > 0) {
-                                        showImportError = if (result.errors.size == 1) {
-                                            result.errors.first()
-                                        } else {
-                                            result.errors.mapIndexed { index, error -> "${index + 1}. $error" }
-                                                .joinToString("\n")
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = MaterialTheme.colorScheme.error
-                        )
-                    ) {
-                        Text(stringResource(R.string.overwrite))
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = {
-                        showLocalOverwriteConfirm = emptyList()
-                        pendingDirectoryUri = null
-                        pendingArchiveUris = emptyList()
-                    }) { Text(stringResource(R.string.cancel)) }
                 }
             )
         }

@@ -65,22 +65,27 @@ fun PostDownloadImportCard(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = importProgress?.currentPackageName ?: stringResource(R.string.importing_model_package),
+                    text = when {
+                        importProgress?.isExtracting == true -> stringResource(R.string.extracting_zip)
+                        else -> importProgress?.currentPackageName ?: stringResource(R.string.importing_model_package)
+                    },
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
             importProgress?.let { progress ->
-                Spacer(modifier = Modifier.height(8.dp))
-                LinearProgressIndicator(
-                    progress = { progress.progressPercent / 100f },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = stringResource(R.string.package_progress, progress.currentPackage, progress.totalPackages),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                if (!progress.isExtracting) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LinearProgressIndicator(
+                        progress = { progress.progressPercent / 100f },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.package_progress, progress.currentPackage, progress.totalPackages),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
     }
@@ -213,22 +218,27 @@ fun LocalImportProgressCard(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = importProgress?.currentPackageName ?: stringResource(R.string.importing_model_package),
+                    text = when {
+                        importProgress?.isExtracting == true -> stringResource(R.string.extracting_zip)
+                        else -> importProgress?.currentPackageName ?: stringResource(R.string.importing_model_package)
+                    },
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
             importProgress?.let { progress ->
-                Spacer(modifier = Modifier.height(8.dp))
-                LinearProgressIndicator(
-                    progress = { progress.progressPercent / 100f },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = stringResource(R.string.package_progress, progress.currentPackage, progress.totalPackages),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                if (!progress.isExtracting) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LinearProgressIndicator(
+                        progress = { progress.progressPercent / 100f },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.package_progress, progress.currentPackage, progress.totalPackages),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
     }
