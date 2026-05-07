@@ -203,15 +203,6 @@ object LocalModelManager {
                     throw InvalidStructureException(context.getString(R.string.import_missing_label, packageName))
                 }
 
-                // 【关键点任务】校验 label.txt 存在（KEYPOINT 任务的内容校验在运行时解析时进行）
-                val detectedTaskType = TaskType.fromAssetDir(firstLevelName)
-                if (detectedTaskType == TaskType.KEYPOINT) {
-                    val labelFile = File(pkgDir, "label.txt")
-                    if (!labelFile.exists() || !labelFile.isFile) {
-                        throw InvalidStructureException(context.getString(R.string.import_missing_label, packageName))
-                    }
-                }
-
                 // 校验尺寸目录和模型文件
                 var hasValidModel = false
                 for (sizeDir in modelsDir.listFiles()?.filter { it.isDirectory } ?: emptyList()) {

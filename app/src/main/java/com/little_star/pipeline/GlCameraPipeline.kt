@@ -163,6 +163,7 @@ class GlCameraPipeline(
                     if (detector == null) return false
 
                     val t0 = System.nanoTime()
+                    var ahwbFailed = false
                     val detections: List<DetectionResult> = try {
                         detector.detectFromAhwb(
                             hardwareBuffer,
@@ -173,35 +174,29 @@ class GlCameraPipeline(
                             getConfThreshold()
                         )
                     } catch (e: UnsupportedOperationException) {
+                        ahwbFailed = true
                         if (ahwbFailCount <= 2) {
                             Log.w(TAG, "[#$frameSeq] AHWB零拷贝不支持: ${e.message}")
                         }
                         emptyList()
                     } catch (e: Exception) {
+                        ahwbFailed = true
                         Log.e(TAG, "[#$frameSeq] AHWB零拷贝异常: ${e.message}", e)
                         emptyList()
                     }
                     val t1 = System.nanoTime()
                     val totalMs = (t1 - t0) / 1_000_000.0
 
-                    if (detections.isEmpty()) {
+                    // AHWB 真正失败（异常）→ return false 触发 CPU 回退
+                    if (ahwbFailed) {
                         ahwbFailCount++
-                        if (ahwbFailCount <= 3 || ahwbFailCount % 100 == 0) {
-                            Log.w(TAG, String.format("[#$frameSeq] AHWB零拷贝失败→回退CPU " +
-                                "(累计=${ahwbFailCount}次): 耗时=%.1fms", totalMs))
-                        }
                         return false
                     }
-                    ahwbFailCount = 0
 
+                    // AHWB 成功（包括空检测结果）→ return true 跳过 CPU 回退
+                    ahwbFailCount = 0
                     val detectMs = detector.lastInferenceTimeMs
                     val fps = if (detectMs > 0) (1000.0 / detectMs).toLong() else 0L
-
-                    if (frameSeq <= 3 || frameSeq % 100 == 0) {
-                        Log.i(TAG, String.format("[#$frameSeq] AHWB零拷贝成功: " +
-                            "耗时=%.1fms native推理=%.1fms fps=%d 检出数=%d",
-                            totalMs, detectMs, fps, detections.size))
-                    }
 
                     callback?.onDetectionResult(
                         detections,
@@ -299,11 +294,17 @@ class GlCameraPipeline(
                 sensorOrientation = camera.cameraInfo.sensorRotationDegrees
                 callback.onSensorOrientationChanged(sensorOrientation)
 
-                // 监听 CameraX 内部错误（偶发超时），自动重绑恢复
+                // 监听 CameraX 内部错误（偶发超时），自动重绑恢复（最多3次）
+                var cameraRetryCount = 0
                 camera.cameraInfo.cameraState.observe(lifecycleOwner) { state ->
                     val err = state.error ?: return@observe
+                    if (cameraRetryCount >= 3) {
+                        Log.w(TAG, "CameraX 错误重绑已达上限(3次), 放弃: code=${err.code}")
+                        return@observe
+                    }
+                    cameraRetryCount++
                     Log.w(TAG, "CameraX 错误: code=${err.code} " +
-                        "cause=${err.cause?.javaClass?.simpleName}, 延迟重绑...")
+                        "cause=${err.cause?.javaClass?.simpleName}, 重绑(${cameraRetryCount}/3)...")
                     android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                         try {
                             cameraProvider.unbindAll()
@@ -311,6 +312,7 @@ class GlCameraPipeline(
                                 lifecycleOwner, cameraSelector, *useCases.toTypedArray()
                             )
                             this@GlCameraPipeline.camera = retryCamera
+                            cameraRetryCount = 0
                             Log.i(TAG, "CameraX 重绑成功")
                         } catch (e: Exception) {
                             Log.e(TAG, "CameraX 重绑失败: ${e.message}", e)

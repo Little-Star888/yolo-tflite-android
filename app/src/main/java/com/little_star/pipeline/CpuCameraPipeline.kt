@@ -58,9 +58,11 @@ class CpuCameraPipeline(
     private var previewView: PreviewView? = null
 
     // Preview 有效分辨率，用于修正 overlay 坐标映射
-    private val previewEffDims = IntArray(2)
+    @Volatile private var previewEffWidth = 0
+    @Volatile private var previewEffHeight = 0
     // Preview 原始分辨率（SurfaceRequest 捕获，旋转前）
-    private val previewRawDims = IntArray(2)
+    @Volatile private var previewRawWidth = 0
+    @Volatile private var previewRawHeight = 0
 
     override fun setupViews(ctx: Context, frameLayout: ViewGroup, overlayView: android.view.View) {
         Log.i(TAG, "═══════ CPU管线启动 ═══════")
@@ -114,8 +116,8 @@ class CpuCameraPipeline(
                 // 拦截 SurfaceProvider 以捕获 Preview 分辨率，再转发给 PreviewView
                 val pvSurfaceProvider = pv.surfaceProvider
                 preview.setSurfaceProvider(executor) { request ->
-                    previewRawDims[0] = request.resolution.width
-                    previewRawDims[1] = request.resolution.height
+                    previewRawWidth = request.resolution.width
+                    previewRawHeight = request.resolution.height
                     Log.i(TAG, "Preview raw=${request.resolution.width}x${request.resolution.height}")
                     pvSurfaceProvider.onSurfaceRequested(request)
                 }
@@ -150,10 +152,16 @@ class CpuCameraPipeline(
                 this@CpuCameraPipeline.camera = camera
                 callback.onSensorOrientationChanged(camera.cameraInfo.sensorRotationDegrees)
 
-                // 监听 CameraX 内部错误（偶发超时），自动重绑恢复
+                // 监听 CameraX 内部错误（偶发超时），自动重绑恢复（最多3次）
+                var cameraRetryCount = 0
                 camera.cameraInfo.cameraState.observe(lifecycleOwner) { state ->
                     val err = state.error ?: return@observe
-                    Log.w(TAG, "CameraX 错误: code=${err.code}, 延迟重绑...")
+                    if (cameraRetryCount >= 3) {
+                        Log.w(TAG, "CameraX 错误重绑已达上限(3次), 放弃: code=${err.code}")
+                        return@observe
+                    }
+                    cameraRetryCount++
+                    Log.w(TAG, "CameraX 错误: code=${err.code}, 重绑(${cameraRetryCount}/3)...")
                     android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                         try {
                             cameraProvider.unbindAll()
@@ -161,6 +169,7 @@ class CpuCameraPipeline(
                                 lifecycleOwner, cameraSelector, *useCases.toTypedArray()
                             )
                             this@CpuCameraPipeline.camera = retryCamera
+                            cameraRetryCount = 0
                             Log.i(TAG, "CameraX 重绑成功")
                         } catch (e: Exception) {
                             Log.e(TAG, "CameraX 重绑失败: ${e.message}", e)
@@ -213,17 +222,19 @@ class CpuCameraPipeline(
             val bh = bitmap.height.toFloat()
 
             // 用 Preview 原始分辨率计算旋转后的有效尺寸
-            if (previewRawDims[0] > 0 && previewRawDims[1] > 0 && previewEffDims[0] == 0) {
+            val rawW = previewRawWidth
+            val rawH = previewRawHeight
+            if (rawW > 0 && rawH > 0 && previewEffWidth == 0) {
                 if (rotationDegrees == 90 || rotationDegrees == 270) {
-                    previewEffDims[0] = previewRawDims[1]
-                    previewEffDims[1] = previewRawDims[0]
+                    previewEffWidth = rawH
+                    previewEffHeight = rawW
                 } else {
-                    previewEffDims[0] = previewRawDims[0]
-                    previewEffDims[1] = previewRawDims[1]
+                    previewEffWidth = rawW
+                    previewEffHeight = rawH
                 }
                 Log.i(TAG, "[#$cpuFrameCount] bitmap=${bitmap.width}x${bitmap.height} " +
-                    "preview=${previewRawDims[0]}x${previewRawDims[1]} " +
-                    "previewEff=${previewEffDims[0]}x${previewEffDims[1]} rot=$rotationDegrees")
+                    "preview=${rawW}x${rawH} " +
+                    "previewEff=${previewEffWidth}x${previewEffHeight} rot=$rotationDegrees")
             }
 
             val detections = try {
@@ -248,8 +259,8 @@ class CpuCameraPipeline(
             bitmap.recycle()
 
             // 使用 Preview 有效分辨率映射 overlay，修正宽高比不一致的偏移
-            val pw = previewEffDims[0].let { if (it > 0) it.toFloat() else bw }
-            val ph = previewEffDims[1].let { if (it > 0) it.toFloat() else bh }
+            val pw = previewEffWidth.let { if (it > 0) it.toFloat() else bw }
+            val ph = previewEffHeight.let { if (it > 0) it.toFloat() else bh }
             val scaleX = pw / bw
             val scaleY = ph / bh
             val finalDetections = if (scaleX != 1f || scaleY != 1f) {
@@ -283,8 +294,10 @@ class CpuCameraPipeline(
         // 不调 unbindAll()：新管线 bindCamera() 会统一调用，避免两次 unbindAll 冲突超时
         callback = null
         previewView = null
-        previewRawDims.fill(0)
-        previewEffDims.fill(0)
+        previewRawWidth = 0
+        previewRawHeight = 0
+        previewEffWidth = 0
+        previewEffHeight = 0
         camera = null
         cameraProvider = null
     }
