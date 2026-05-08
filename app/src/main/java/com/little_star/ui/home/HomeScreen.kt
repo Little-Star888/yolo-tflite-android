@@ -364,23 +364,8 @@ fun HomeScreen(
     }
 
     if (!contentReady) {
-        // 加载过渡动画：全屏居中
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .statusBarsPadding(),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                CircularProgressIndicator()
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.initializing),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
+        // 导航动画期间的轻量占位：空白页面，保持首帧轻快以确保 slide 动画流畅
+        Box(modifier = modifier.fillMaxSize().statusBarsPadding())
         return
     }
 

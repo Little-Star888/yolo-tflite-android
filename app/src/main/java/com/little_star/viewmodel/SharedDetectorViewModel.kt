@@ -201,13 +201,10 @@ class SharedDetectorViewModel(
     private var targetBackend: InferenceBackend? = null
 
     init {
-        // 在后台线程初始化模型扫描器，避免主线程卡顿
         viewModelScope.launch(Dispatchers.IO) {
             _modelScanner = ModelRepository.getOrCreate(getApplication(), taskType)
-            // 先预加载默认模型，再通知 UI 就绪
-            // 确保 UI 渲染时模型已 Ready，CascadingDropdowns 回调直接命中三层防重入
-            preloadDefaultDetector()
             _scannerReady.value = true
+            launch { preloadDefaultDetector() }
         }
     }
 
