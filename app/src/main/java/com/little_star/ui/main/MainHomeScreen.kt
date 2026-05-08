@@ -28,6 +28,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -35,6 +37,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.little_star.R
+import com.little_star.assets.ModelRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 /**
  * 主首页：功能选择
@@ -130,6 +136,16 @@ fun MainHomeScreen(
                 description = stringResource(R.string.task_oriented_bbox_desc),
                 onClick = onNavigateToOrientedBbox
             )
+        }
+    }
+
+    // 首页渲染完成后后台预热所有任务类型的扫描缓存，
+    // 用户点击 Task 卡片时扫描器已就绪，无需等待
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        delay(500)
+        withContext(Dispatchers.IO) {
+            ModelRepository.prewarmAll(context)
         }
     }
 }

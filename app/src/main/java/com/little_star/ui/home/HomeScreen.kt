@@ -151,7 +151,8 @@ fun HomeScreen(
     }
 
     // 首次从主首页进入时显示加载动画，从识别模式返回时不显示
-    var contentReady by remember { mutableStateOf(sharedViewModel.initialized) }
+    // 使用 scannerReady.value（StateFlow，线程安全）而非 initialized（普通 var，IO/主线程间无内存屏障）
+    var contentReady by remember { mutableStateOf(sharedViewModel.scannerReady.value) }
     // 监听 scannerReady StateFlow，scanner 就绪后才显示内容（替代不可靠的硬编码 delay）
     val scannerReady by sharedViewModel.scannerReady.collectAsState()
     LaunchedEffect(scannerReady) {
@@ -383,10 +384,9 @@ fun HomeScreen(
         return
     }
 
-    // 检查是否有任何可用模型（导入/删除后通过 modelRefreshKey 触发刷新）
-    val hasModels = remember(modelRefreshKey) {
-        scanner != null && scanner.getAvailableFormats().isNotEmpty()
-    }
+    // 检查是否有任何可用模型（直接计算，无 remember 缓存，
+    // 避免 scanner 就绪但 remember 缓存了旧 false 值的竞态）
+    val hasModels = scanner != null && scanner.getAvailableFormats().isNotEmpty()
 
     // 下载前确认对话框（区分 WiFi / 移动数据）— 放在分支之前，两个界面都能看到
     showDownloadConfirm?.let { model ->

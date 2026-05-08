@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.little_star.R
 import com.little_star.assets.LocalModelManager
+import com.little_star.assets.ModelRepository
 import com.little_star.assets.RemoteModelManager
 import com.little_star.assets.TaskModelScanner
 import com.little_star.detector.IDetector
@@ -70,11 +71,8 @@ class SharedDetectorViewModel(
     private val _scannerReady = MutableStateFlow(false)
     val scannerReady: StateFlow<Boolean> = _scannerReady.asStateFlow()
 
-    /** 是否已完成首次初始化（用于控制加载动画） */
-    var initialized = false
-        private set
-
-    /** 任务模型扫描器，异步初始化 */
+    /** 任务模型扫描器，异步初始化（@Volatile 保证 IO/主线程可见性） */
+    @Volatile
     private var _modelScanner: TaskModelScanner? = null
     val modelScanner: TaskModelScanner?
         get() = _modelScanner
@@ -205,12 +203,11 @@ class SharedDetectorViewModel(
     init {
         // 在后台线程初始化模型扫描器，避免主线程卡顿
         viewModelScope.launch(Dispatchers.IO) {
-            _modelScanner = TaskModelScanner(getApplication(), taskType)
+            _modelScanner = ModelRepository.getOrCreate(getApplication(), taskType)
             // 先预加载默认模型，再通知 UI 就绪
             // 确保 UI 渲染时模型已 Ready，CascadingDropdowns 回调直接命中三层防重入
             preloadDefaultDetector()
             _scannerReady.value = true
-            initialized = true
         }
     }
 
@@ -643,7 +640,7 @@ class SharedDetectorViewModel(
             }
             if (!isActive) return@launch
             if (result.success) {
-                _modelScanner?.refresh(getApplication())
+                _modelScanner = ModelRepository.recreate(getApplication(), taskType)
             }
             withContext(Dispatchers.Main) {
                 _isImporting.value = false
@@ -706,7 +703,7 @@ class SharedDetectorViewModel(
             }
             if (!isActive) return@launch
             if (totalModels > 0) {
-                _modelScanner?.refresh(getApplication())
+                _modelScanner = ModelRepository.recreate(getApplication(), taskType)
             }
             withContext(Dispatchers.Main) {
                 _isImporting.value = false
@@ -777,7 +774,7 @@ class SharedDetectorViewModel(
             }
             if (!isActive) return@launch
             if (totalModels > 0) {
-                _modelScanner?.refresh(getApplication())
+                _modelScanner = ModelRepository.recreate(getApplication(), taskType)
             }
             withContext(Dispatchers.Main) {
                 _isImporting.value = false
@@ -1033,7 +1030,7 @@ class SharedDetectorViewModel(
         tempFile.delete()
 
         if (result.success) {
-            _modelScanner?.refresh(getApplication())
+            _modelScanner = ModelRepository.recreate(getApplication(), taskType)
         }
         // 仅在未被取消时回调（已取消时由 cancelDownload() 统一处理回调）
         if (downloadGeneration == gen && currentCoroutineContext().isActive) {
@@ -1130,7 +1127,7 @@ class SharedDetectorViewModel(
             currentLoadedModel?.isLocal == true && currentLoadedModel?.packageName in packageNames
         )
         val count = LocalModelManager.deleteImportedModels(getApplication(), packageNames, taskType)
-        _modelScanner?.refresh(getApplication())
+        _modelScanner = ModelRepository.recreateBlocking(getApplication(), taskType)
         return count
     }
 
@@ -1147,7 +1144,7 @@ class SharedDetectorViewModel(
                 (packageName == null || currentLoadedModel?.packageName == packageName)
         )
         val count = LocalModelManager.deleteImportedModels(getApplication(), packageName, taskType)
-        _modelScanner?.refresh(getApplication())
+        _modelScanner = ModelRepository.recreateBlocking(getApplication(), taskType)
         return count
     }
 
@@ -1158,7 +1155,7 @@ class SharedDetectorViewModel(
         )
         val count =
             LocalModelManager.deleteDownloadedModels(getApplication(), packageNames, taskType)
-        _modelScanner?.refresh(getApplication())
+        _modelScanner = ModelRepository.recreateBlocking(getApplication(), taskType)
         return count
     }
 
@@ -1170,7 +1167,7 @@ class SharedDetectorViewModel(
         )
         val count =
             LocalModelManager.deleteDownloadedModels(getApplication(), packageName, taskType)
-        _modelScanner?.refresh(getApplication())
+        _modelScanner = ModelRepository.recreateBlocking(getApplication(), taskType)
         return count
     }
 
