@@ -139,7 +139,7 @@ class SharedDetectorViewModel(
     private var downloadGeneration = 0L
 
     /** 远程服务器 URL */
-    private val _remoteServerUrl = MutableStateFlow(RemoteModelManager.DEFAULT_BASE_URL)
+    private val _remoteServerUrl = MutableStateFlow(RemoteModelManager.DEFAULT_URL)
     val remoteServerUrl: StateFlow<String> = _remoteServerUrl.asStateFlow()
 
     /** URL 历史记录 */
@@ -230,7 +230,8 @@ class SharedDetectorViewModel(
 
             // 直接调用 loadDetector，复用完整的标签加载、配置构建、状态管理逻辑
             loadDetector(model, inferenceType, AcceleratorMode.CPU, InferenceBackend.LITERT_NATIVE)
-        } catch (_: Exception) { }
+        } catch (_: Exception) {
+        }
     }
 
     /**
@@ -328,11 +329,23 @@ class SharedDetectorViewModel(
                     val modelConfig: ModelConfig = when (taskType) {
                         TaskType.KEYPOINT -> {
                             val kptNames = labelConfig.keypoints
-                                ?: throw IllegalArgumentException(getApplication<Application>().getString(R.string.error_label_missing_keypoints))
+                                ?: throw IllegalArgumentException(
+                                    getApplication<Application>().getString(
+                                        R.string.error_label_missing_keypoints
+                                    )
+                                )
                             val flipIdx = labelConfig.flipIdx
-                                ?: throw IllegalArgumentException(getApplication<Application>().getString(R.string.error_label_missing_flip_idx))
+                                ?: throw IllegalArgumentException(
+                                    getApplication<Application>().getString(
+                                        R.string.error_label_missing_flip_idx
+                                    )
+                                )
                             val keypointsLink = labelConfig.keypointsLink
-                                ?: throw IllegalArgumentException(getApplication<Application>().getString(R.string.error_label_missing_keypoints_link))
+                                ?: throw IllegalArgumentException(
+                                    getApplication<Application>().getString(
+                                        R.string.error_label_missing_keypoints_link
+                                    )
+                                )
 
                             KeypointModelConfig(
                                 inputSize = 640,
@@ -385,7 +398,8 @@ class SharedDetectorViewModel(
 
                     if (!newDetector.isInitialized) {
                         newDetector.release()
-                        _detectorState.value = DetectorState.Error(getApplication<Application>().getString(R.string.error_detector_init_failed))
+                        _detectorState.value =
+                            DetectorState.Error(getApplication<Application>().getString(R.string.error_detector_init_failed))
                         return@launch
                     }
                     detector = newDetector
@@ -407,8 +421,10 @@ class SharedDetectorViewModel(
                     val cacheInfo = when {
                         newDetector.usedAotModel ->
                             DetectorState.CacheInfo.AOT
+
                         newDetector.actualAccelerator == AcceleratorMode.NPU && newDetector.jitCacheHit ->
                             DetectorState.CacheInfo.JIT
+
                         else -> DetectorState.CacheInfo.NONE
                     }
                     _detectorState.value = DetectorState.Ready(cacheInfo)
@@ -537,7 +553,8 @@ class SharedDetectorViewModel(
         bitmap: Bitmap,
         results: List<DetectionResult>,
         confThreshold: Float = _confThreshold.value
-    ): Bitmap = com.little_star.model.DetectionRenderer.drawDetectionBoxes(bitmap, results, confThreshold)
+    ): Bitmap =
+        com.little_star.model.DetectionRenderer.drawDetectionBoxes(bitmap, results, confThreshold)
 
     /**
      * 创建导入进度回调的工厂方法
@@ -578,11 +595,17 @@ class SharedDetectorViewModel(
                 _importProgress.value = _importProgress.value?.copy(
                     currentPackage = prevZipPackages + current,
                     totalPackages = cumulativeTotal,
-                    currentPackageName = getApplication<Application>().getString(R.string.error_importing_package, packageName)
+                    currentPackageName = getApplication<Application>().getString(
+                        R.string.error_importing_package,
+                        packageName
+                    )
                 ) ?: LocalModelManager.ImportProgress(
                     currentPackage = current,
                     totalPackages = total,
-                    currentPackageName = getApplication<Application>().getString(R.string.error_importing_package, packageName)
+                    currentPackageName = getApplication<Application>().getString(
+                        R.string.error_importing_package,
+                        packageName
+                    )
                 )
             }
 
@@ -711,7 +734,10 @@ class SharedDetectorViewModel(
                         success = successCount > 0,
                         packageName = lastPackage,
                         modelCount = totalModels,
-                        error = if (failCount > 0) getApplication<Application>().getString(R.string.error_batch_import_failed, errors.size) else null,
+                        error = if (failCount > 0) getApplication<Application>().getString(
+                            R.string.error_batch_import_failed,
+                            errors.size
+                        ) else null,
                         successCount = successCount,
                         failCount = failCount,
                         errors = errors,
@@ -782,7 +808,10 @@ class SharedDetectorViewModel(
                         success = successCount > 0,
                         packageName = lastPackage,
                         modelCount = totalModels,
-                        error = if (failCount > 0) getApplication<Application>().getString(R.string.error_batch_archive_import_failed, errors.size) else null,
+                        error = if (failCount > 0) getApplication<Application>().getString(
+                            R.string.error_batch_archive_import_failed,
+                            errors.size
+                        ) else null,
                         successCount = successCount,
                         failCount = failCount,
                         errors = errors,
@@ -797,24 +826,25 @@ class SharedDetectorViewModel(
     /**
      * 加载远程模型列表
      *
-     * @param baseUrl 服务器基础 URL
+     * @param url 服务器 URL
      */
-    fun fetchRemoteModels(baseUrl: String = _remoteServerUrl.value) {
-        _remoteServerUrl.value = baseUrl
+    fun fetchRemoteModels(url: String = _remoteServerUrl.value) {
+        _remoteServerUrl.value = url
         _isLoadingRemoteModels.value = true
         _remoteError.value = null
         fetchJob = viewModelScope.launch(Dispatchers.IO) {
-            val result = RemoteModelManager.fetchModelList(baseUrl, getApplication())
+            val result = RemoteModelManager.fetchModelList(url, getApplication())
             if (!isActive) return@launch
             result.fold(
                 onSuccess = { models ->
                     _remoteModels.value = models
                     _isLoadingRemoteModels.value = false
-                    saveUrlToHistory(baseUrl)
+                    saveUrlToHistory(url)
                 },
                 onFailure = { e ->
                     if (!isActive) return@launch
-                    _remoteError.value = e.message ?: getApplication<Application>().getString(R.string.error_load_failed)
+                    _remoteError.value = e.message
+                        ?: getApplication<Application>().getString(R.string.error_load_failed)
                     _remoteModels.value = emptyList()
                     _isLoadingRemoteModels.value = false
                 }
@@ -988,7 +1018,8 @@ class SharedDetectorViewModel(
                         success = false,
                         packageName = null,
                         modelCount = 0,
-                        error = dlResult.error ?: getApplication<Application>().getString(R.string.error_download_failed),
+                        error = dlResult.error
+                            ?: getApplication<Application>().getString(R.string.error_download_failed),
                         successCount = 0,
                         failCount = 1
                     )
@@ -1138,7 +1169,7 @@ class SharedDetectorViewModel(
         // 如果当前加载的模型是被删除的模型，先释放
         releaseDetectorIfNeeded(
             currentLoadedModel?.isLocal == true &&
-                (packageName == null || currentLoadedModel?.packageName == packageName)
+                    (packageName == null || currentLoadedModel?.packageName == packageName)
         )
         val count = LocalModelManager.deleteImportedModels(getApplication(), packageName, taskType)
         _modelScanner = ModelRepository.recreateBlocking(getApplication(), taskType)
@@ -1160,7 +1191,7 @@ class SharedDetectorViewModel(
     fun deleteDownloadedModels(packageName: String? = null): Int {
         releaseDetectorIfNeeded(
             currentLoadedModel?.isRemote == true &&
-                (packageName == null || currentLoadedModel?.packageName == packageName)
+                    (packageName == null || currentLoadedModel?.packageName == packageName)
         )
         val count =
             LocalModelManager.deleteDownloadedModels(getApplication(), packageName, taskType)
@@ -1244,7 +1275,10 @@ class SharedDetectorViewModel(
             // 默认：返回原始错误消息
             msg.isNotBlank() -> msg
             causeMsg.isNotBlank() -> causeMsg
-            else -> getApplication<Application>().getString(R.string.error_model_load_failed, e::class.simpleName ?: "Unknown")
+            else -> getApplication<Application>().getString(
+                R.string.error_model_load_failed,
+                e::class.simpleName ?: "Unknown"
+            )
         }
     }
 
