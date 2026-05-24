@@ -519,16 +519,16 @@ Java_com_little_1star_detector_impl_tflite_LiteRtNativeDetector_nativeDetect(
             ~BitmapUnlocker() { AndroidBitmap_unlockPixels(e, b); }
         } unlocker{env, bitmap};
 
-        // Preprocessing dispatch via postprocessor
+        // Preprocessing dispatch via postprocessor（默认双线性插值）
         if (state.postprocessor->getPreprocessMode() == yolo::PreprocessMode::CENTER_CROP) {
-            PreprocessCenterCropAndNormalize(
+            PreprocessCenterCropAndNormalize_Bilinear(
                 pixels, info.width, info.height,
                 state.input_data.data(), state.input_size);
             state.letterbox_scale = 1.0f;
             state.letterbox_offset_x = 0.0f;
             state.letterbox_offset_y = 0.0f;
         } else {
-            PreprocessLetterboxAndNormalize(
+            PreprocessLetterboxAndNormalize_Bilinear(
                 pixels, info.width, info.height,
                 state.input_data.data(), state.input_size,
                 &state.letterbox_scale, &state.letterbox_offset_x, &state.letterbox_offset_y);
