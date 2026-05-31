@@ -11,6 +11,7 @@ import com.little_star.detector.model.DetectionResult
 import com.little_star.detector.model.InferenceType
 import com.little_star.detector.model.KeypointModelConfig
 import com.little_star.detector.util.LogCapture
+import com.little_star.detector.util.NpuVendorLibSetup
 
 /**
  * TFLite 目标检测器实现（Native JNI）
@@ -153,8 +154,15 @@ class LiteRtNativeDetector(context: Context) : BaseLiteRtDetector(context) {
         }
 
         val npuLibDir = if (acceleratorMode == AcceleratorMode.NPU) {
-            setupAdspLibraryPath()
-            context.applicationInfo.nativeLibraryDir
+            // 从 assets 安装厂商 NPU 库到私有目录，预加载，设置 C++ 全局插件目录
+            val vendorDir = NpuVendorLibSetup.setup(context)
+            if (vendorDir != null) {
+                vendorDir
+            } else {
+                // 回退：不支持的设备使用 nativeLibraryDir
+                setupAdspLibraryPath()
+                context.applicationInfo.nativeLibraryDir
+            }
         } else ""
 
         // NPU 模式下优先查找 AOT 预编译模型

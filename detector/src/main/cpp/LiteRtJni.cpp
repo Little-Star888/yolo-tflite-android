@@ -9,6 +9,7 @@
 #include <memory>
 #include <chrono>
 #include <vector>
+#include <cstdlib>  // setenv()
 // EGL fence sync: 用于 GL→GPU delegate 异步同步
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -122,6 +123,10 @@ namespace {
     std::string g_env_npu_lib_dir;
     std::string g_env_npu_cache_dir;
 
+    // 全局 NPU 厂商插件目录（由 NpuVendorLibSetup.setup() 设置）
+    // 用于 kDispatchLibraryDir / kCompilerPluginLibraryDir / ADSP_LIBRARY_PATH
+    static std::string g_npu_plugin_dir;
+
     // EGL 上下文（GL 线程注入，用于 MTK/Tensor 零拷贝）
     // 在 onSurfaceCreated 中通过 nativeInjectEglContext() 设置
     void* g_egl_display_ptr = nullptr;
@@ -159,7 +164,9 @@ namespace {
             g_egl_context_ptr = nullptr;
             return true;
         }
-        if (is_npu && (npu_lib != g_env_npu_lib_dir || npu_cache != g_env_npu_cache_dir)) {
+        // 使用全局插件目录（非空时优先于传入的 npu_lib）
+        const std::string& effective_lib = g_npu_plugin_dir.empty() ? npu_lib : g_npu_plugin_dir;
+        if (is_npu && (effective_lib != g_env_npu_lib_dir || npu_cache != g_env_npu_cache_dir)) {
             g_egl_env.reset();
             return true;
         }
@@ -184,6 +191,32 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* vm, void* reserved) {
     g_detector_state.reset();
     g_shared_env.reset();
     g_env_accel_mode = -1;
+}
+
+// ============================================================================
+// NPU 厂商插件目录（由 NpuVendorLibSetup.setup() 通过 JNI 调用）
+// ============================================================================
+
+JNIEXPORT void JNICALL
+Java_com_little_1star_detector_util_NpuVendorLibSetup_nativeSetNpuPluginDir(
+        JNIEnv* env, jobject thiz, jstring jDir) {
+    const char* dir_chars = env->GetStringUTFChars(jDir, nullptr);
+    if (!dir_chars) {
+        LOGE("GetStringUTFChars returned null for npuPluginDir");
+        return;
+    }
+    std::string dir(dir_chars);
+    env->ReleaseStringUTFChars(jDir, dir_chars);
+
+    g_npu_plugin_dir = dir;
+    LOGI("NPU plugin dir set to: %s", dir.c_str());
+
+    // 设置 ADSP_LIBRARY_PATH，让 Qualcomm FastRPC 从厂商库目录加载 DSP 侧 Skel .so
+    if (!dir.empty()) {
+        std::string adspPath = dir + ";/vendor/lib/rfsa/adsp;/system/lib/rfsa/adsp;/vendor/dsp";
+        setenv("ADSP_LIBRARY_PATH", adspPath.c_str(), 1);
+        LOGI("ADSP_LIBRARY_PATH set to: %s", adspPath.c_str());
+    }
 }
 
 // ============================================================================
@@ -277,18 +310,20 @@ Java_com_little_1star_detector_impl_tflite_LiteRtNativeDetector_nativeInit(
         }
 
         // Reuse or create Environment
-        if (EnvNeedsRecreate(accelerator_mode, npu_lib_dir_str, npu_cache_dir_str)) {
+        // 使用全局插件目录（非空时优先于传入的 npu_lib_dir_str）
+        const std::string& effectiveNpuLibDir = g_npu_plugin_dir.empty() ? npu_lib_dir_str : g_npu_plugin_dir;
+        if (EnvNeedsRecreate(accelerator_mode, effectiveNpuLibDir, npu_cache_dir_str)) {
             g_shared_env.reset();
-            if (!npu_lib_dir_str.empty()) {
+            if (!effectiveNpuLibDir.empty()) {
                 LOGI("Creating NPU Environment with lib dir: %s, cache dir: %s",
-                     npu_lib_dir_str.c_str(), npu_cache_dir_str.c_str());
+                     effectiveNpuLibDir.c_str(), npu_cache_dir_str.c_str());
                 std::vector<litert::EnvironmentOptions::Option> opts;
                 opts.push_back(litert::EnvironmentOptions::Option(
                     litert::EnvironmentOptions::Tag::kDispatchLibraryDir,
-                    npu_lib_dir_str.c_str()));
+                    effectiveNpuLibDir.c_str()));
                 opts.push_back(litert::EnvironmentOptions::Option(
                     litert::EnvironmentOptions::Tag::kCompilerPluginLibraryDir,
-                    npu_lib_dir_str.c_str()));
+                    effectiveNpuLibDir.c_str()));
                 if (!npu_cache_dir_str.empty()) {
                     opts.push_back(litert::EnvironmentOptions::Option(
                         litert::EnvironmentOptions::Tag::kCompilerCacheDir,
@@ -297,7 +332,7 @@ Java_com_little_1star_detector_impl_tflite_LiteRtNativeDetector_nativeInit(
                 auto env_result = litert::Environment::Create(
                     litert::EnvironmentOptions(opts));
                 if (!env_result.HasValue()) {
-                    LOGE("Failed to create NPU Environment with dir: %s", npu_lib_dir_str.c_str());
+                    LOGE("Failed to create NPU Environment with dir: %s", effectiveNpuLibDir.c_str());
                     return JNI_FALSE;
                 }
                 g_shared_env = std::make_unique<litert::Environment>(
@@ -314,7 +349,7 @@ Java_com_little_1star_detector_impl_tflite_LiteRtNativeDetector_nativeInit(
                     std::move(env_result.Value()));
             }
             g_env_accel_mode = accelerator_mode;
-            g_env_npu_lib_dir = npu_lib_dir_str;
+            g_env_npu_lib_dir = effectiveNpuLibDir;
             g_env_npu_cache_dir = npu_cache_dir_str;
             LOGI("Created new Environment (accel=%d)", accelerator_mode);
         } else {

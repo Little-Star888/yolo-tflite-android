@@ -69,6 +69,90 @@ if (!File(litertCcSdkDir, "libLiteRt.so").exists()) {
     tempDir.deleteRecursively()
 }
 
+// ── Qualcomm NPU 运行时下载（仅当 libQnn*.so 不存在时触发）────────────
+// 用于手动更新：删除 src/main/assets/npu/vendor/qualcomm/ 下的 libQnn*.so 后构建即可重新下载
+val qairtVersion = "2.44.0.260225"
+val qairtUrl = "https://softwarecenter.qualcomm.com/api/download/software/sdks/Qualcomm_AI_Runtime_Community/All/${qairtVersion}/v${qairtVersion}.zip"
+val qairtContentDir = "qairt/${qairtVersion}"
+val qnnVersions = listOf(69, 73, 75, 79, 81)
+val qualcommAssetsDir = file("src/main/assets/npu/vendor/qualcomm")
+val skelStubDir = "skel_stub"
+
+tasks.register("downloadQualcommRuntime") {
+    doLast {
+        // 检查通用库 + 各版本 Skel/Stub 是否完整
+        val commonLibsExist = file("${qualcommAssetsDir}/libQnnHtp.so").exists()
+                && file("${qualcommAssetsDir}/libQnnSystem.so").exists()
+                && file("${qualcommAssetsDir}/libQnnHtpPrepare.so").exists()
+        val allSkelStubExist = qnnVersions.all { ver ->
+            file("${qualcommAssetsDir}/${skelStubDir}/v${ver}/libQnnHtpV${ver}Skel.so").exists()
+            && file("${qualcommAssetsDir}/${skelStubDir}/v${ver}/libQnnHtpV${ver}Stub.so").exists()
+        }
+        if (commonLibsExist && allSkelStubExist) {
+            logger.lifecycle("Qualcomm NPU runtime already exists and complete, skipping download.")
+            return@doLast
+        }
+        if (commonLibsExist && !allSkelStubExist) {
+            val missingVersions = qnnVersions.filter { ver ->
+                !file("${qualcommAssetsDir}/${skelStubDir}/v${ver}/libQnnHtpV${ver}Skel.so").exists()
+            }
+            logger.lifecycle("Common libs exist but Skel/Stub missing for versions: ${missingVersions}. Re-downloading...")
+        }
+        qualcommAssetsDir.mkdirs()
+        val archiveFile = file("${layout.buildDirectory.get()}/qairt/qairt_sdk.zip")
+        archiveFile.parentFile.mkdirs()
+        logger.lifecycle("Downloading Qualcomm AI Runtime ${qairtVersion}...")
+        // 使用 curl 下载：带浏览器 User-Agent（高通服务器拒绝无 UA 的请求）、跟随重定向、支持断点续传
+        val proc = ProcessBuilder(
+            "curl", "-L", "-C", "-", "-A", "Mozilla/5.0",
+            "--retry", "3", "--retry-delay", "5",
+            "-o", archiveFile.absolutePath, qairtUrl
+        ).redirectErrorStream(true).start()
+        val output = proc.inputStream.bufferedReader().readText()
+        val exitCode = proc.waitFor()
+        if (exitCode != 0) {
+            throw GradleException("Failed to download Qualcomm AI Runtime (exit $exitCode):\n$output")
+        }
+        val extractDir = file("${layout.buildDirectory.get()}/qairt/extracted")
+        extractDir.deleteRecursively()
+        ant.withGroovyBuilder {
+            "unzip"("src" to archiveFile, "dest" to extractDir)
+        }
+        val sourceDir = file("${extractDir}/${qairtContentDir}")
+        // 复制通用 QNN 库
+        listOf("libQnnHtp.so", "libQnnSystem.so", "libQnnHtpPrepare.so").forEach { lib ->
+            ant.withGroovyBuilder {
+                "copy"("file" to "${sourceDir}/lib/aarch64-android/${lib}",
+                       "todir" to qualcommAssetsDir)
+            }
+        }
+        // 复制各版本特有的 Skel/Stub（按版本号分子目录）
+        qnnVersions.forEach { ver ->
+            val verDir = file("${qualcommAssetsDir}/${skelStubDir}/v${ver}")
+            verDir.mkdirs()
+            ant.withGroovyBuilder {
+                "copy"("file" to "${sourceDir}/lib/hexagon-v${ver}/unsigned/libQnnHtpV${ver}Skel.so",
+                       "todir" to verDir)
+            }
+            ant.withGroovyBuilder {
+                "copy"("file" to "${sourceDir}/lib/aarch64-android/libQnnHtpV${ver}Stub.so",
+                       "todir" to verDir)
+            }
+        }
+        // 清理临时文件
+        archiveFile.delete()
+        extractDir.deleteRecursively()
+        logger.lifecycle("Qualcomm NPU runtime downloaded to ${qualcommAssetsDir}")
+    }
+}
+
+// CMake 构建时自动触发 QNN SDK 下载
+tasks.configureEach {
+    if (name.contains("externalNativeBuild") || name.contains("CMake")) {
+        dependsOn("downloadQualcommRuntime")
+    }
+}
+
 android {
     namespace = "com.little_star.detector"
     compileSdk = 36

@@ -17,6 +17,7 @@ import com.little_star.detector.util.LetterboxTransform
 import com.little_star.detector.model.AcceleratorMode
 import com.little_star.detector.model.DetectionResult
 import com.little_star.detector.util.LogCapture
+import com.little_star.detector.util.NpuVendorLibSetup
 
 /**
  * TFLite 目标检测器实现（Java API）
@@ -51,7 +52,18 @@ class LiteRtJavaDetector(context: Context) : BaseLiteRtDetector(context) {
             }
             if (sharedEnv == null) {
                 sharedEnv = if (mode == AcceleratorMode.NPU) {
-                    Environment.create(BuiltinNpuAcceleratorProvider(ctx))
+                    // 安装厂商 NPU 库，获取插件目录
+                    val vendorDir = NpuVendorLibSetup.setup(ctx)
+                    if (vendorDir != null) {
+                        val options = mapOf(
+                            Environment.Option.DispatchLibraryDir to vendorDir,
+                            Environment.Option.CompilerPluginLibraryDir to vendorDir,
+                        )
+                        Environment.create(BuiltinNpuAcceleratorProvider(ctx), options)
+                    } else {
+                        // 回退：使用默认 nativeLibraryDir
+                        Environment.create(BuiltinNpuAcceleratorProvider(ctx))
+                    }
                 } else {
                     Environment.create()
                 }
@@ -101,10 +113,6 @@ class LiteRtJavaDetector(context: Context) : BaseLiteRtDetector(context) {
     ) {
         this.modelConfig = modelConfig
         try {
-            if (acceleratorMode == AcceleratorMode.NPU) {
-                setupAdspLibraryPath()
-            }
-
             env = getOrCreateEnv(context, acceleratorMode)
 
             val options = buildOptions(acceleratorMode)
