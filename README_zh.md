@@ -69,30 +69,16 @@
 ### 方式一：Android Studio（推荐）
 
 1. 安装 [Android Studio 最新版本](https://developer.android.com/studio)，打开本项目
-2. 在 `local.properties` 中配置路径与目标 SoC：
+2. 在 `local.properties` 中配置路径：
 
 ```properties
 # Android Studio 通常会自动生成此行
 sdk.dir=/path/to/android-sdk
 # 可选，未配置时使用 Android Studio 内置 JDK
 org.gradle.java.home=/path/to/jdk-21
-# 可选：sm8450 / sm8550 / sm8650 / sm8750 / sm8850 / qualcomm（所有高通，默认）/ mediatek
-targetSoc=sm8850
 ```
 
-3. **（仅使用 高通NPU 时需要）** 下载 QNN 运行时库（约 1-2 GB）：
-
-```bash
-cd litert_npu_runtime_libraries
-# Windows
-.\fetch_qualcomm_library.ps1
-# Linux / macOS
-./fetch_qualcomm_library.sh
-```
-
-> 仅使用 GPU / CPU 推理时可跳过此步骤。如只需特定 SoC，可编辑脚本中的 `QnnVersions` 数组。
-
-4. 点击 Run，AS 会自动安装 base APK + 对应的 QNN split APK。
+3. 点击 Run。首次构建会自动下载 LiteRT C++ SDK 和高通 QNN 运行时（已有缓存则跳过）。生成的单 APK 包含所有 NPU 厂商库。
 
 ---
 
@@ -109,19 +95,19 @@ cd litert_npu_runtime_libraries
 chmod +x setup-isolated-env.sh && ./setup-isolated-env.sh
 ```
 
-完成后下载 Qualcomm QNN 运行时（步骤同上），然后构建安装：
+完成后构建安装：
 
 ```bash
 # Windows
-.\gradlew.bat installLocalDebug
+.\gradlew.bat installDebug
 
 # Linux / macOS
-./gradlew installLocalDebug
+./gradlew installDebug
 ```
 
-> **Tips**：手机需通过 USB 连接电脑并开启 **USB 调试** 或 **无线调试**，`adb devices` 能看到设备。`installLocalDebug` 会自动调用 `adb install-multiple` 安装 base APK + 运行时 split APK。
+> **Tips**：手机需通过 USB 连接电脑并开启 **USB 调试** 或 **无线调试**，`adb devices` 能看到设备。
 
-> 首次构建会自动下载 Gradle、LiteRT C++ SDK 等依赖。如遇 CMake / C++ 编译错误，尝试删除 `detector/.cxx/` 后重新构建。
+> 首次构建会自动下载 Gradle、LiteRT C++ SDK、高通 QNN 运行时等依赖。如遇 CMake / C++ 编译错误，尝试删除 `detector/.cxx/` 后重新构建。
 >
 > 如果本地开启了代理，需在 `gradle.properties` 中取消代理配置的注释并填入实际端口：
 > ```properties
@@ -351,15 +337,11 @@ AOT 模型放置于对应 `aot/` 子目录，应用启动时自动根据设备 S
 
 首次 Gradle sync 时自动从 [GitHub Releases](https://github.com/google-ai-edge/LiteRT/releases) 下载并配置，无需手动操作。若网络下载失败，可手动下载 `litert_cc_sdk.zip` 并解压到 `detector/src/main/cpp/litert_cc_sdk/`，然后删除 `detector/.cxx/` 缓存后重新 sync。
 
-### NPU 运行时（targetSoc 配置）
+### NPU 运行时
 
-`targetSoc` 控制打包的 NPU 运行时模块，精确配置可减小 APK 体积（每个运行时约 10-20 MB）：
+NPU 厂商库（高通 QNN、MediaTek Neuron）存储在 `detector/src/main/assets/npu/vendor/` 中。高通 QNN SDK 由 `downloadQualcommRuntime` Gradle 任务在首次构建时自动下载。如需强制重新下载，删除 `src/main/assets/npu/vendor/qualcomm/` 下的文件后重新构建即可。
 
-| 配置值 | 打包内容 |
-|--------|---------|
-| `qualcomm`（默认） | 全部高通运行时（v69-v81） |
-| `sm8450` / `sm8550` / `sm8650` / `sm8750` / `sm8850` | 对应单个 SoC 运行时 |
-| `mediatek` | MediaTek 运行时（需 Android 15） |
+运行时应用会检测设备 SoC 厂商，仅复制匹配的库到私有目录，并通过 `System.load()` 预加载，无需手动配置。
 
 ---
 
@@ -372,10 +354,9 @@ yolo-tflite-android/
 │   └── src/main/assets/          # 内置模型（默认为空，.gitignore 已排除）
 ├── detector/                     # 检测器模块
 │   ├── src/main/java/            # IDetector 接口、Native/Java 后端、后处理器
-│   └── src/main/cpp/             # C++ JNI、LiteRT 推理、5 种任务后处理器
-├── litert_npu_runtime_libraries/ # NPU 运行时库（高通 / MTK / Tensor）
-│   ├── fetch_qualcomm_library.sh # 高通运行时下载脚本
-│   └── fetch_qualcomm_library.ps1
+│   ├── src/main/cpp/             # C++ JNI、LiteRT 推理、5 种任务后处理器
+│   └── src/main/assets/npu/      # NPU 厂商库（高通自动下载）
+│       └── vendor/{qualcomm,mediatek}/
 ├── aot_compile.py                # AOT 预编译脚本
 └── setup-isolated-env*           # 隔离环境配置脚本
 ```
@@ -406,7 +387,7 @@ yolo-tflite-android/
 | 依赖 | 许可证 | 说明 |
 |------|--------|------|
 | LiteRT（含 NPU 插件） | Apache 2.0 | 已包含 |
-| Qualcomm QNN SDK | Qualcomm 专有 | 需通过脚本手动下载 |
+| Qualcomm QNN SDK | Qualcomm 专有 | 首次构建时由 Gradle 自动下载 |
 | Ultralytics YOLO 预训练权重 | AGPL-3.0 | 不包含，需自行下载转换；商业使用请联系 [Ultralytics](https://ultralytics.com/license) |
 
 ---
